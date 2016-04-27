@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module type="CPP_MODULE" version="4">
+  <component name="NewModuleRootManager">
+    <content url="file://$MODULE_DIR$">
+      <sourceFolder url="file://$MODULE_DIR$/src/bin/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/patch/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/config/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/madpack/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/postgres/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/postgres/cmake/PostgreSQLUtils.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/postgres/cmake/FindPostgreSQL.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/greenplum/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/greenplum/cmake/FindGreenplum.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/greenplum/cmake/GreenplumUtils.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/hawq/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/hawq/cmake/HAWQUtils.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/src/ports/hawq/cmake/FindHAWQ.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/PGXN/zipignore.in" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/PGXN/META.json.in" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/PGXN/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/PGXN/generate_package.sh.in" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/gppkg/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/PackageMaker/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/RPM/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/deploy/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/doc/etc/header.html" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/doc/etc/madlib_extra.css" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/doc/etc/DoxygenLayout.xml" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/doc/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/doc/design/CMakeLists.txt" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/doc/mainpage.dox.in" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/OSXUtils.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/Utils.cmake" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/cmake/LinuxUtils.cmake" isTestSource="false" />
+    </content>
+    <orderEntry type="jdk" jdkName="Python 2.7.10 (/usr/bin/python2.7)" jdkType="Python SDK" />
+    <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="module-library">
+      <library name="Header Search Paths">
+        <CLASSES />
+        <SOURCES />
+      </library>
+    </orderEntry>
+  </component>
+</module>

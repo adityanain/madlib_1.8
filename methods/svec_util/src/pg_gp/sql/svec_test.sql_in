@@ -1,0 +1,322 @@
+m4_include(`SQLCommon.m4')
+
+---------------------------------------------------------------------------
+-- Rules:
+-- ------
+-- 1) Any DB objects should be created w/o schema prefix,
+--    since this file is executed in a separate schema context.
+-- 2) There should be no DROP statements in this script, since
+--    all objects created in the default schema will be cleaned-up outside.
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+-- Test:
+---------------------------------------------------------------------------
+select svec_dmin(1000,1000.1);
+select svec_dmin(1000,NULL);
+select svec_dmin(NULL,1000);
+select svec_dmin(NULL,NULL);
+select svec_dmax(1000,1000.1);
+select svec_dmax(1000,NULL);
+select svec_dmax(NULL,1000);
+select svec_dmax(NULL,NULL);
+
+
+create table test_pairs( id int, a svec, b svec );
+insert into test_pairs values
+       (0, '{1,100,1}:{5,0,5}', '{50,50,2}:{1,2,10}'),
+       (1, '{1,100,1}:{-5,0,-5}', '{50,50,2}:{-1,-2,-10}');
+insert into test_pairs values
+--       (10, null, null),
+       (11, '{1}:{0}', '{1}:{1}'),
+       (12, '{1}:{5}', '{3}:{-8}'),
+       (13, '{1}:{0}', '{1}:{NULL}'),
+       (14, '{1,2,1}:{2,4,2}', '{2,1,1}:{0,3,5}'),
+       (15, '{1,2,1}:{2,4,2}', '{2,1,1}:{NULL,3,5}');
+
+
+select id, svec_count(a,b) from test_pairs where svec_dimension(a) = svec_dimension(b) order by id;
+select id, svec_plus(a,b) from test_pairs order by id;
+select id, svec_plus(a,b) = svec_plus(b,a) from test_pairs order by id;
+select id, svec_mult(a,b) from test_pairs order by id;
+select id, svec_mult(a,b) = svec_mult(b,a) from test_pairs order by id;
+select id, svec_div(a,b) = svec_mult(a, svec_pow(b,(-1)::svec)) from test_pairs order by id;
+select id, svec_minus(a, b) = svec_plus(svec_mult((-1)::svec,b), a) from test_pairs order by id;
+select id, svec_pow(a,2::svec) = svec_mult(a,a) from test_pairs order by id;
+
+select id, svec_dot(a,b) from test_pairs where svec_dimension(a) = svec_dimension(b) order by id;
+select id, svec_dot(a,b) = svec_dot(b,a) from test_pairs where svec_dimension(a) = svec_dimension(b) order by id;
+select id, svec_dot(a,b::float8[]) = svec_dot(b,a::float8[]) from test_pairs where svec_dimension(a) = svec_dimension(b) order by id;
+select id, svec_dot(a::float8[],b) = svec_dot(b::float8[],a) from test_pairs where svec_dimension(a) = svec_dimension(b) order by id;
+select id, svec_dot(a::float8[],b::float8[]) = svec_dot(b::float8[],a::float8[]) from test_pairs where svec_dimension(a) = svec_dimension(b) order by id;
+
+select id, svec_l2norm(a), svec_l2norm(a::float[]), svec_l2norm(b), svec_l2norm(b::float8[]) from test_pairs order by id;
+select id, svec_l1norm(a), svec_l1norm(a::float[]), svec_l1norm(b), svec_l1norm(b::float8[]) from test_pairs order by id;
+
+select svec_plus('{1,2,3}:{4,5,6}', 5::svec);
+select svec_plus(5::svec, '{1,2,3}:{4,5,6}');
+select svec_plus(500::svec, '{1,2,3}:{4,null,6}');
+select svec_div(500::svec, '{1,2,3}:{4,null,6}');
+select svec_div('{1,2,3}:{4,null,6}', 500::svec);
+
+-- Test operators between svec and float8[]
+select ('{1,2,3,4}:{3,4,5,6}'::svec)           %*% ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[];
+select ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[] %*% ('{1,2,3,4}:{3,4,5,6}'::svec);
+select ('{1,2,3,4}:{3,4,5,6}'::svec)            /  ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[];
+select ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[]  /  ('{1,2,3,4}:{3,4,5,6}'::svec);
+select ('{1,2,3,4}:{3,4,5,6}'::svec)            *  ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[];
+select ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[]  *  ('{1,2,3,4}:{3,4,5,6}'::svec);
+select ('{1,2,3,4}:{3,4,5,6}'::svec)            +  ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[];
+select ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[]  +  ('{1,2,3,4}:{3,4,5,6}'::svec);
+select ('{1,2,3,4}:{3,4,5,6}'::svec)            -  ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[];
+select ('{1,2,3,4}:{3,4,5,6}'::svec)::float8[]  -  ('{1,2,3,4}:{3,4,5,6}'::svec);
+
+-- these should produce error messages
+/*
+select '{10000000000000000000}:{1}'::svec ;
+select '{1,null,2}:{2,3,4}'::svec;
+select svec_count('{1,1,1}:{3,4,5}', '{2,2}:{1,3}');
+select svec_plus('{1,1,1}:{3,4,5}', '{2,2}:{1,3}');
+select svec_minus('{1,1,1}:{3,4,5}', '{2,2}:{1,3}');
+select svec_mult('{1,1,1}:{3,4,5}', '{2,2}:{1,3}');
+select svec_div('{1,1,1}:{3,4,5}', '{2,2}:{1,3}');
+*/
+
+select svec_unnest('{1}:{5}'::svec);
+select svec_unnest('{1,2,3,4}:{5,6,7,8}'::svec);
+select svec_unnest('{1,2,3,4}:{5,6,null,8}'::svec);
+select id, svec_unnest(a),a from test_pairs where id >= 10 order by id;
+
+select svec_pivot('{1}:{5}', 2);
+select svec_pivot('{1}:{5}', 5);
+select svec_pivot('{1}:{5}', null);
+select svec_pivot('{1}:{null}', 5);
+select svec_pivot('{1}:{null}', null);
+select svec_pivot('{1,2,3,4}:{5,6,7,8}'::svec, 2);
+select id, svec_pivot(a, 5), a, svec_pivot(a,6), a, svec_pivot(a,2) from test_pairs order by id;
+select id, svec_pivot(b, 5), b, svec_pivot(b,6), b, svec_pivot(b,null) from test_pairs order by id;
+
+select svec_elsum('{1}:{-5}'::svec);
+select id, a, svec_elsum(a), a, b, svec_elsum(b), b from test_pairs order by id;
+select id, svec_elsum(a) = svec_elsum(a::float8[]) from test_pairs order by id;
+select id, svec_elsum(b) = svec_elsum(b::float8[]) from test_pairs order by id;
+
+select id, a, svec_median(a), a from test_pairs order by id;
+select id, b, svec_median(b), b from test_pairs order by id;
+select id, svec_median(a) = svec_median(a::float8[]),
+           svec_median(b) = svec_median(b::float8[]) from test_pairs order by id;
+
+select id, a, b, svec_concat(a,b), a, b from test_pairs order by id;
+
+select id, svec_concat_replicate(0, b), b from test_pairs order by id;
+select id, svec_concat_replicate(1, b) = b from test_pairs order by id;
+select id, svec_concat_replicate(3, b), b from test_pairs order by id;
+-- select id, svec_concat_replicate(-2, b), b from test_pairs order by id; -- this should produce error message
+
+select id, svec_dimension(a), a, svec_dimension(b), b from test_pairs order by id;
+
+select svec_lapply('sqrt', null);
+select id, svec_lapply('sqrt', svec_lapply('abs', a)), a from test_pairs order by id;
+select id, svec_lapply('sqrt', svec_lapply('abs', b)), b from test_pairs order by id;
+
+select svec_append(null::svec, 220::float8, 20::int8);
+select id, svec_append(a, 50, 100), a, svec_append(b, null, 50), b from test_pairs order by id;
+
+select svec_proj(a,1), a, svec_proj(b,1), b from test_pairs order by id;
+-- select svec_proj(a,2), a, svec_proj(b,2), b from test_pairs order by id; -- this should result in an appropriate error message
+
+select svec_subvec('{1,20,30,10,600,2}:{1,2,3,4,5,6}', 3,69);
+select svec_subvec('{1,20,30,10,600,2}:{1,2,3,4,5,6}', 69,3);
+select svec_subvec(a,2,4), a from test_pairs where svec_dimension(a) >= 4 order by id;
+select svec_subvec(a,2,svec_dimension(a)-1), a from test_pairs where svec_dimension(a) >= 2 order by id;
+-- select svec_subvec(a,svec_dimension(a)-1,0), a from test_pairs where svec_dimension(a) >= 2 order by id;
+
+select svec_reverse(a), a, svec_reverse(b), b from test_pairs order by id;
+select svec_subvec('{1,20,30,10,600,2}:{1,2,3,4,5,6}', 3,69) =
+       svec_reverse(svec_subvec('{1,20,30,10,600,2}:{1,2,3,4,5,6}', 69,3));
+
+select svec_change('{1,20,30,10,600,2}:{1,2,3,4,5,6}', 3, '{2,3}:{4,null}');
+select svec_change(a,1,'{1}:{-50}'), a from test_pairs order by id;
+
+-- Test the multi-concatenation and show sizes compared with a normal array
+create table corpus_proj as (select 10000 *|| ('{45,2,35,4,15,1}:{0,1,0,1,0,2}'::svec) result );
+create table corpus_proj_array as (select result::float8[] from corpus_proj);
+-- Calculate on-disk size of sparse vector
+select pg_size_pretty(pg_total_relation_size('corpus_proj'));
+-- Calculate on-disk size of normal array
+select pg_size_pretty(pg_total_relation_size('corpus_proj_array'));
+
+-- Calculate L1 norm from sparse vector
+select svec_l1norm(result) from corpus_proj;
+-- Calculate L1 norm from float8[]
+select svec_l1norm(result) from corpus_proj_array;
+-- Calculate L2 norm from sparse vector
+select svec_l2norm(result) from corpus_proj;
+-- Calculate L2 norm from float8[]
+select svec_l2norm(result) from corpus_proj_array;
+
+create table svec_svec as (
+select
+    1000 *|| ('{45,2,35,4,15,1}:{0,1,0,1,0,2}'::svec) result1,
+    1000 *|| ('{35,2,45,4,15,1}:{2,0,1,1,0,4}'::svec) result2 );
+-- Calculate L1 norm from two sparse vectors
+select l1norm(result1, result2) from svec_svec;
+-- Calculate L2 norm from two sparse vectors
+select l2norm(result1, result2) from svec_svec;
+-- Calculate angle between two sparse vectors
+select angle(result1, result2) from svec_svec;
+-- Calculate tanimoto distance between two sparse vectors
+select tanimoto_distance(result1, result2) from svec_svec;
+
+-- Calculate normalized vectors
+select normalize(result) from corpus_proj;
+
+-- Test the pivot operator
+create table pivot_test(a float8);
+insert into pivot_test values (0),(1),(0),(2),(3);
+-- select svec_agg(a) from pivot_test;
+select svec_l1norm(svec_agg(a)) from pivot_test;
+-- Answer should be 5
+select svec_median(svec_agg(a)) from (select generate_series(1,9) a) foo;
+-- Answer should be a 10-wide vector
+select svec_agg(a) from (select trunc(random()*10) a,generate_series(1,100000) order by a) foo;
+-- Average is 4.50034, median is 5
+select svec_median('{9960,9926,10053,9993,10080,10050,9938,9941,10030,10029}:{1,9,8,7,6,5,4,3,2,0}'::svec);
+select svec_median('{9960,9926,10053,9993,10080,10050,9938,9941,10030,10029}:{1,9,8,7,6,5,4,3,2,0}'::svec::float8[]);
+
+-- This vfunction test svec creation from position array
+select svec_cast_positions_float8arr('{1,2,4,6,2,5}'::INT8[], '{.2,.3,.4,.5,.3,.1}'::FLOAT8[], 10000, 0.0);
+
+-- test of functions returning positions and values of non-base values
+select svec_nonbase_values('{1,2,3,1000,4}:{1,2,3,0,4}'::SVEC, 0.0::float8);
+select svec_nonbase_positions('{1,2,3,1000,4}:{1,2,3,0,4}'::SVEC, 0.0::float8);
+
+-- svec conversion to and from string
+select svec_to_string('{2,3}:{4,5}');
+select svec_from_string('{2,3}:{4,5}');
+
+-- UDA: mean(svec)
+create table test_svec (a int, b svec);
+select mean(b) from test_svec;
+insert into test_svec select 1, '{1,2,3}'::float[]::svec;
+insert into test_svec select 2, '{2,2.5,3.1}'::float[]::svec;
+insert into test_svec select 3, '{3,3,3.2}'::float[]::svec;
+select mean(b) from test_svec;
+
+create table _dictionary (id bigint, dict_terms text[]);
+insert into _dictionary values('1', '{am,before,being,bothered,corpus,document,i,in,is,me,never,now,one,really,second,the,third,this,until}');
+create table dictionary as select generate_series(0, array_upper(dict_terms, 1) - 1) id, unnest(dict_terms) term from _dictionary;
+create table _documents(id bigint, terms text[]);
+insert into _documents values
+    (1,'{this,is,one,document,in,the,corpus}'),
+    (2,'{i,am,the,second,document,in,the,corpus}'),
+    (3,'{being,third,never,really,bothered,me,until,now}'),
+    (4,'{the,document,before,me,is,the,third,document}');
+create table documents as select id, unnest term, count(*) from ( select id, unnest(terms) from _documents) s  group by id, term;
+select * from gen_doc_svecs('output','dictionary' ,'id', 'term', 'documents', 'id', 'term', 'count');
+select * from output order by doc_id;
+
+select
+    assert(count(*) = 2, '__gen_svec for indices bigger than 255')
+from
+(
+    select
+        svec_unnest(
+            __gen_svec('{7855,8623}', '{1,1}', 8624)
+        ) as b
+) a
+where not b = 0;
+
+m4_ifdef(`__HAWQ__', `/*', `')
+
+---------------------------------------------------------------------------
+-- operators
+SELECT assert(NOT '{2,1}:{1,0}'::svec OPERATOR(==) '{1,1,1,2}:{1,0,1,0}'::svec, 'svec OPERATOR(==)');
+SELECT assert('{500,300,200}:{1,1,1}'::svec OPERATOR(==) '{1000}:{1}'::svec, 'svec OPERATOR(==)');
+SELECT assert(NOT '{2,1}:{1,0}'::svec OPERATOR(=) '{1,1,1,2}:{1,0,1,0}'::svec, 'svec OPERATOR(=)');
+SELECT assert('{500,300,200}:{1,1,1}'::svec OPERATOR(=) '{1000}:{1}'::svec, 'svec OPERATOR(=)');
+SELECT assert('{2,1}:{1,0}'::svec OPERATOR(<>) '{1,1,1,2}:{1,0,1,0}'::svec, 'svec OPERATOR(<>)');
+SELECT assert(NOT '{500,300,200}:{1,1,1}'::svec OPERATOR(<>) '{1000}:{1}'::svec, 'svec OPERATOR(<>)');
+
+--
+SELECT assert('{2,1}:{1,0}'::svec OPERATOR(>) '{1,1,1,2}:{1,0,1,0}'::svec, 'svec OPERATOR(>)');
+SELECT assert(NOT '{2,1}:{1,0}'::svec OPERATOR(>) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(>)');
+SELECT assert(NOT '{2,3}:{1,0}'::svec OPERATOR(>) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(>)');
+SELECT assert('{2,4}:{1,0}'::svec OPERATOR(>) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(>)');
+
+SELECT assert(NOT '{500,300,200}:{1,1,1}'::svec OPERATOR(>) '{1000}:{1}'::svec, 'svec OPERATOR(>)');
+SELECT assert('{500,300,400}:{1,1,1}'::svec OPERATOR(>) '{1000}:{1}'::svec, 'svec OPERATOR(>)');
+SELECT assert('{500,300,200,1}:{1,1,1,-1}'::svec OPERATOR(>) '{1000}:{1}'::svec, 'svec OPERATOR(>)');
+
+--
+SELECT assert(NOT '{2,1}:{1,0}'::svec OPERATOR(<) '{1,1,1,2}:{1,0,1,0}'::svec, 'svec OPERATOR(<)');
+SELECT assert('{2,1}:{1,0}'::svec OPERATOR(<) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(<)');
+SELECT assert(NOT '{2,3}:{1,0}'::svec OPERATOR(<) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(<)');
+SELECT assert(NOT '{2,4}:{1,0}'::svec OPERATOR(<) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(<)');
+
+SELECT assert(NOT '{500,300,200}:{1,1,1}'::svec OPERATOR(<) '{1000}:{1}'::svec, 'svec OPERATOR(<)');
+SELECT assert(NOT '{500,300,400}:{1,1,1}'::svec OPERATOR(<) '{1000}:{1}'::svec, 'svec OPERATOR(<)');
+SELECT assert(NOT '{500,300,200,1}:{1,1,1,-1}'::svec OPERATOR(<) '{1000}:{1}'::svec, 'svec OPERATOR(<)');
+
+--
+SELECT assert('{2,1}:{1,0}'::svec OPERATOR(>=) '{1,1,1,2}:{1,0,1,0}'::svec, 'svec OPERATOR(>=)');
+SELECT assert(NOT '{2,1}:{1,0}'::svec OPERATOR(>=) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(>=)');
+SELECT assert('{2,3}:{1,0}'::svec OPERATOR(>=) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(>=)');
+SELECT assert('{2,4}:{1,0}'::svec OPERATOR(>=) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(>=)');
+
+SELECT assert('{500,300,200}:{1,1,1}'::svec OPERATOR(>=) '{1000}:{1}'::svec, 'svec OPERATOR(>=)');
+SELECT assert('{500,300,400}:{1,1,1}'::svec OPERATOR(>=) '{1000}:{1}'::svec, 'svec OPERATOR(>=)');
+SELECT assert('{500,300,200,1}:{1,1,1,-1}'::svec OPERATOR(>=) '{1000}:{1}'::svec, 'svec OPERATOR(>=)');
+
+--
+SELECT assert(NOT '{2,1}:{1,0}'::svec OPERATOR(<=) '{1,1,1,2}:{1,0,1,0}'::svec, 'svec OPERATOR(<=)');
+SELECT assert('{2,1}:{1,0}'::svec OPERATOR(<=) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(<=)');
+SELECT assert('{2,3}:{1,0}'::svec OPERATOR(<=) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(<=)');
+SELECT assert(NOT '{2,4}:{1,0}'::svec OPERATOR(<=) '{1,1,1,2}:{1,1,0,0}'::svec, 'svec OPERATOR(<=)');
+
+SELECT assert('{500,300,200}:{1,1,1}'::svec OPERATOR(<=) '{1000}:{1}'::svec, 'svec OPERATOR(<=)');
+SELECT assert(NOT '{500,300,400}:{1,1,1}'::svec OPERATOR(<=) '{1000}:{1}'::svec, 'svec OPERATOR(<=)');
+SELECT assert(NOT '{500,300,200,1}:{1,1,1,-1}'::svec OPERATOR(<=) '{1000}:{1}'::svec, 'svec OPERATOR(<=)');
+
+-- MADLIB-642
+CREATE TABLE madlib_642(id serial, id2 svec);
+INSERT INTO madlib_642(id2) VALUES
+(ARRAY[1,1,0]::float8[]::svec),
+(ARRAY[1,0,0]::float8[]::svec),
+(ARRAY[1,0,1]::float8[]::svec);
+
+SELECT assert(
+    count(id) = 2,
+    'Wrong Result of predicates w/ <svec>')
+FROM madlib_642
+WHERE id2 <> ARRAY[1,1,0]::float8[]::svec;
+
+-- SELECT assert(
+--     count(c) = 3,
+--     'Wrong Result of GROUP BY <madlib.svec>')
+-- FROM (
+--     SELECT id2, count(id) AS c
+--     FROM madlib_642
+--     GROUP BY id2
+-- ) subq;
+
+-- Handling NaNs
+-- IEEE754 specifies that NaN should not compare equal to any other
+-- floating-point value (including NaN). In order to allow floating-point
+-- values to be sorted and used in tree-based indexes, PostgreSQL treats
+-- NaN values as equal, and greater than all non-NaN values (including Inf).
+SELECT assert('{1,NULL}'::float8[]::svec > '{1,NaN}'::float8[]::svec, 'svec: NULL > NaN fails unexpectedly');
+SELECT assert('{1,NaN}'::float8[]::svec > '{1,9999,35}'::float8[]::svec, 'svec: NaN > 9999 fails unexpectedly');
+SELECT assert('{1,Infinity}'::float8[]::svec <= '{1,NaN,9999,35}'::float8[]::svec, 'svec: Inf <= NaN fails unexpectedly');
+SELECT assert('{1,NULL}'::float8[]::svec = '{1,NULL}'::float8[]::svec, 'svec: NULL = NULL fails unexpectedly');
+SELECT assert('{1,NaN}'::float8[]::svec = '{1,NaN}'::float8[]::svec, 'svec: NaN = NaN fails unexpectedly');
+
+-- make sure float8[] has the same behaviors
+SELECT assert('{1,NULL}'::float8[] > '{1,NaN}'::float8[], 'float8[]: NULL > NaN fails unexpectedly');
+SELECT assert('{1,NaN}'::float8[] > '{1,9999,35}'::float8[], 'float8[]: NaN > 9999 fails unexpectedly');
+SELECT assert('{1,Infinity}'::float8[] <= '{1,NaN,9999,35}'::float8[], 'float8[]: Inf <= NaN fails unexpectedly');
+SELECT assert('{1,NULL}'::float8[] = '{1,NULL}'::float8[], 'float8[]: NULL = NULL fails unexpectedly');
+SELECT assert('{1,NaN}'::float8[] = '{1,NaN}'::float8[], 'float8[]: NaN = NaN fails unexpectedly');
+
+m4_ifdef(`__HAWQ__', `*/', `')
+

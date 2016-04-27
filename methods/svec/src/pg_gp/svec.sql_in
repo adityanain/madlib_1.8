@@ -1,0 +1,1198 @@
+/* ----------------------------------------------------------------------- *//**
+ *
+ * @file svec.sql_in
+ *
+ * @brief SQL type definitions and functions for sparse vector data type
+ *        <tt>svec</tt>
+ *
+ * @sa For an introduction to the sparse vector implementation, see the module
+ *     description \ref grp_svec.
+ *
+ *//* ----------------------------------------------------------------------- */
+
+m4_include(`SQLCommon.m4')
+
+/**
+@addtogroup grp_svec
+
+<div class="toc"><b>Contents</b>
+<ul>
+<li><a href="#usage">Using Sparse Vectors</a></li>
+<li><a href="#vectorization">Document Vectorization into Sparse Vectors</a></li>
+<li><a href="#examples">Examples</a></li>
+<li><a href="#related">Related Topics</a></li>
+</ul>
+</div>
+
+@brief Implements a sparse vector data type that provides compressed storage
+of vectors that may have many duplicate elements.
+
+This module implements a sparse vector data type, named "svec", which
+provides compressed storage of vectors that have many duplicate elements.
+
+Arrays of floating point numbers for various calculations  sometimes have
+long runs of zeros (or some other default value).  This is common in
+applications like scientific computing,  retail optimization, and text
+processing. Each floating point number takes  8 bytes of storage in memory
+and/or disk, so saving those zeros is often  worthwhile. There are also
+many computations that can benefit from skipping over the zeros.
+
+Consider, for example, the following
+array of doubles stored as a Postgres/Greenplum "float8[]" data type:
+
+<pre class="example">
+'{0, 33,...40,000 zeros..., 12, 22 }'\::float8[]
+</pre>
+
+This array would occupy slightly more than 320KB of memory or disk, most of
+it zeros. Even if we were to exploit the null bitmap and store the zeros
+as nulls, we would still end up with a 5KB null bitmap, which is still not
+nearly as memory efficient as we'd like. Also, as we perform various
+operations on the array, we do work on 40,000 fields that turn out to be
+unimportant.
+
+To solve the problems associated with the processing of vectors discussed
+above, the svec type employs a simple Run Length Encoding (RLE) scheme to
+represent sparse vectors as pairs of count-value arrays. For example, the
+array above would be represented as
+
+<pre class="example">
+'{1,1,40000,1,1}:{0,33,0,12,22}'\::madlib.svec
+</pre>
+
+which says there is 1 occurrence of 0, followed by 1 occurrence of 33,
+followed by 40,000 occurrences of 0, etc. This uses just 5 integers and 5
+floating point numbers to store the array. Further, it is easy to
+implement vector operations that can take advantage of the RLE
+representation to make computations faster. The SVEC module provides a library
+of such functions.
+
+The current version only supports sparse vectors of float8 values. Future
+versions will support other base types.
+
+@anchor usage
+@par Using Sparse Vectors
+
+An SVEC can be constructed directly with a constant expression, as follows:
+<pre class="example">
+SELECT '{n1,n2,...,nk}:{v1,v2,...vk}'\::madlib.svec;
+</pre>
+where <tt>n1,n2,...,nk</tt> specifies the counts for the values <tt>v1,v2,...,vk</tt>.
+
+A float array can be cast to an SVEC:
+<pre class="example">
+SELECT ('{v1,v2,...vk}'\::float[])\::madlib.svec;
+</pre>
+
+An SVEC can be created with an aggregation:
+<pre class="example">
+SELECT madlib.svec_agg(v1) FROM generate_series(1,k);
+</pre>
+
+An SVEC can be created using the
+<tt>madlib.svec_cast_positions_float8arr()</tt> function by supplying an
+array of positions and an array of values at those positions:
+<pre class="example">
+SELECT madlib.svec_cast_positions_float8arr(
+    array[n1,n2,...nk],    -- positions of values in vector
+    array[v1,v2,...vk],    -- values at each position
+    length,                -- length of vector
+    base)                  -- value at unspecified positions
+</pre>
+For example, the following expression:
+<pre class="example">
+SELECT madlib.svec_cast_positions_float8arr(
+    array[1,3,5],
+    array[2,4,6],
+    10,
+    0.0)
+</pre>
+produces this SVEC:
+<pre class="result">
+ svec_cast_positions_float8arr
+ &nbsp;------------------------------
+ {1,1,1,1,1,5}:{2,0,4,0,6,0}
+</pre>
+
+Add MADLIB_SCHEMA to the search_path to use the svec operators
+defined in the module.
+
+@anchor vectorization
+@par Document Vectorization into Sparse Vectors
+This module implements an efficient way for document vectorization, converting
+text documents into sparse vector representation (MADlib.svec), required by various
+machine learning algorithms in MADlib.
+
+The function accepts two tables as input, dictionary table and documents
+table, and produces the specified output table containing sparse vectors
+for the represented documents (in documents table).
+
+<pre class="syntax">
+madlib.gen_doc_svecs(output_tbl,
+                     dictionary_tbl,
+                     dict_id_col,
+                     dict_term_col,
+                     documents_tbl,
+                     doc_id_col,
+                     doc_term_col,
+                     doc_term_info_col
+                    )
+</pre>
+\b Arguments
+<DL class="arglist">
+<DT>output_tbl</DT>
+<DD>TEXT. Name of the output table to be created containing the sparse
+vector representation of the documents. It has the following columns:
+    <table class="output">
+    <tr>
+        <th>doc_id</th>
+        <td>__TYPE_DOC__. Document id.
+            \n \__TYPE_DOC__: Column type depends on the type of \c doc_id_col in \c documents_tbl.
+        </td>
+    </tr>
+    <tr>
+        <th>sparse_vector</th>
+        <td>MADlib.svec. Corresponding sparse vector representation.</td>
+    </tr>
+    </table>
+</DD>
+
+<DT>dictionary_tbl</DT>
+<DD>TEXT. Name of the dictionary table containing features.
+    <table class="output">
+    <tr>
+        <th>dict_id_col</th>
+        <td>TEXT. Name of the id column in the \c dictionary_tbl.
+            \n Expected Type: INTEGER or BIGINT.
+            \n NOTE: Values must be continuous ranging from 0 to total number of elements in
+            the dictionary - 1.</dt>
+    </tr>
+    <tr>
+        <th>dict_term_col</th>
+        <td>TEXT. Name of the column containing term (features) in \c dictionary_tbl.</td>
+    </tr>
+    </table>
+</DD>
+
+<DT>documents_tbl</DT>
+<DD>TEXT. Name of the documents table representing documents.
+    <table class="output">
+    <tr>
+        <th>doc_id_col</th>
+        <td>TEXT. Name of the id column in the \c documents_tbl.</td>
+    </tr>
+    <tr>
+        <th>doc_term_col</th>
+        <td>TEXT. Name of the term column in the \c documents_tbl.</td>
+    </tr>
+    <tr>
+        <th>doc_term_info_col</th>
+        <td>TEXT. Name of the term info column in \c documents_tbl. The expected type of this column should be:
+            \n - INTEGER, BIGINT or DOUBLE PRECISION: Values directly used to populate vector.
+            \n - ARRAY: Length of the array used to populate the vector.
+            \n ** For an example use case on using these types of column types, please refer to the example below.
+        </td>
+    </tr>
+    </table>
+</DD>
+</DL>
+
+\b Example:
+\n Consider a corpus consisting of set of documents consisting of features (terms) along with doc ids:
+<pre class="example">
+1, {this,is,one,document,in,the,corpus}
+2, {i,am,the,second,document,in,the,corpus}
+3, {being,third,never,really,bothered,me,until,now}
+4, {the,document,before,me,is,the,third,document}
+</pre>
+
+-# Prepare documents table in appropriate format.
+\n The corpus specified above can be represented by any of the following \c documents_table:
+<pre class="example">
+SELECT * FROM documents_table ORDER BY id;
+</pre>
+Result:
+<pre class="result">
+  id |   term   | count                 id |   term   | positions
+&nbsp;----+----------+-------               ----+----------+-----------
+   1 | is       |     1                  1 | is       | {1}
+   1 | in       |     1                  1 | in       | {4}
+   1 | one      |     1                  1 | one      | {2}
+   1 | this     |     1                  1 | this     | {0}
+   1 | the      |     1                  1 | the      | {5}
+   1 | document |     1                  1 | document | {3}
+   1 | corpus   |     1                  1 | corpus   | {6}
+   2 | second   |     1                  2 | second   | {3}
+   2 | document |     1                  2 | document | {4}
+   2 | corpus   |     1                  2 | corpus   | {7}
+   . | ...      |    ..                  . | ...      | ...
+   4 | document |     2                  4 | document | {1,7}
+...
+</pre>
+
+-# Prepare dictionary table in appropriate format.
+<pre class="example">
+SELECT * FROM dictionary_table ORDER BY id;
+</pre>
+Result:
+<pre class="result">
+  id |   term
+&nbsp;----+----------
+   0 | am
+   1 | before
+   2 | being
+   3 | bothered
+   4 | corpus
+   5 | document
+   6 | i
+   7 | in
+   8 | is
+   9 | me
+...
+</pre>
+
+-# Generate sparse vector for the documents using dictionary_table and documents_table.
+\n \c doc_term_info_col \c (count) of type INTEGER:
+<pre class="example">
+SELECT * FROM madlib.gen_doc_svecs('svec_output', 'dictionary_table', 'id', 'term',
+                            'documents_table', 'id', 'term', 'count');
+</pre>
+\c  doc_term_info_col \c (positions) of type ARRAY:
+<pre class="example">
+SELECT * FROM madlib.gen_doc_svecs('svec_output', 'dictionary_table', 'id', 'term',
+                            'documents_table', 'id', 'term', 'positions');
+</pre>
+Result:
+<pre class="result">
+                                 gen_doc_svecs
+&nbsp;--------------------------------------------------------------------------------------
+ Created table svec_output (doc_id, sparse_vector) containing sparse vectors
+(1 row)
+</pre>
+
+-# Analyze the sparse vectors created.
+<pre class="example">
+SELECT * FROM svec_output ORDER by doc_id;
+</pre>
+Result:
+<pre class="result">
+ doc_id |                  sparse_vector
+&nbsp;--------+-------------------------------------------------
+      1 | {4,2,1,2,3,1,2,1,1,1,1}:{0,1,0,1,0,1,0,1,0,1,0}
+      2 | {1,3,4,6,1,1,3}:{1,0,1,0,1,2,0}
+      3 | {2,2,5,3,1,1,2,1,1,1}:{0,1,0,1,0,1,0,1,0,1}
+      4 | {1,1,3,1,2,2,5,1,1,2}:{0,1,0,2,0,1,0,2,1,0}
+(4 rows)
+</pre>
+
+See the file svec.sql_in for complete syntax.
+
+@anchor examples
+@examp
+
+We can use operations with svec type like <, >, *, **, /, =, +, SUM, etc,
+and they have meanings associated with typical vector operations. For
+example, the plus (+) operator adds each of the terms of two vectors having
+the same dimension together.
+<pre class="example">
+SELECT ('{0,1,5}'\::float8[]\::madlib.svec + '{4,3,2}'\::float8[]\::madlib.svec)\::float8[];
+</pre>
+Result:
+<pre class="result">
+ float8
+&nbsp;--------
+ {4,4,7}
+</pre>
+
+Without the casting into float8[] at the end, we get:
+<pre class="example">
+SELECT '{0,1,5}'\::float8[]\::madlib.svec + '{4,3,2}'\::float8[]\::madlib.svec;
+</pre>
+Result:
+<pre class="result">
+ ?column?
+&nbsp;---------
+{2,1}:{4,7}
+</pre>
+
+A dot product (%*%) between the two vectors will result in a scalar
+result of type float8. The dot product should be (0*4 + 1*3 + 5*2) = 13,
+like this:
+<pre class="example">
+SELECT '{0,1,5}'\::float8[]\::madlib.svec %*% '{4,3,2}'\::float8[]\::madlib.svec;
+</pre>
+<pre class="result">
+ ?column?
+&nbsp;---------
+	13
+</pre>
+
+Special vector aggregate functions are also available. SUM is self
+explanatory. SVEC_COUNT_NONZERO evaluates the count of non-zero terms
+in each column found in a set of n-dimensional svecs and returns an
+svec with the counts. For instance, if we have the vectors {0,1,5},
+{10,0,3},{0,0,3},{0,1,0}, then executing the SVEC_COUNT_NONZERO() aggregate
+function would result in {1,2,3}:
+
+<pre class="example">
+CREATE TABLE list (a madlib.svec);
+INSERT INTO list VALUES ('{0,1,5}'\::float8[]), ('{10,0,3}'\::float8[]), ('{0,0,3}'\::float8[]),('{0,1,0}'\::float8[]);
+SELECT madlib.svec_count_nonzero(a)\::float8[] FROM list;
+</pre>
+Result:
+<pre class="result">
+svec_count_nonzero
+&nbsp;----------------
+	{1,2,3}
+</pre>
+
+We do not use null bitmaps in the svec data type. A null value in an svec
+is represented explicitly as an NVP (No Value Present) value. For example,
+we have:
+<pre class="example">
+SELECT '{1,2,3}:{4,null,5}'\::madlib.svec;
+</pre>
+Result:
+<pre class="result">
+	  svec
+&nbsp;------------------
+ {1,2,3}:{4,NVP,5}
+</pre>
+
+Adding svecs with null values results in NVPs in the sum:
+<pre class="example">
+SELECT '{1,2,3}:{4,null,5}'\::madlib.svec + '{2,2,2}:{8,9,10}'\::madlib.svec;
+</pre>
+Result:
+<pre class="result">
+		 ?column?
+ &nbsp;-------------------------
+  {1,2,1,2}:{12,NVP,14,15}
+</pre>
+
+An element of an svec can be accessed using the svec_proj() function,
+which takes an svec and the index of the element desired.
+<pre class="example">
+SELECT madlib.svec_proj('{1,2,3}:{4,5,6}'\::madlib.svec, 1) + madlib.svec_proj('{4,5,6}:{1,2,3}'\::madlib.svec, 15);
+</pre>
+Result:
+<pre class="result"> ?column?
+&nbsp;---------
+	7
+</pre>
+
+A subvector of an svec can be accessed using the svec_subvec() function,
+which takes an svec and the start and end index of the subvector desired.
+<pre class="example">
+SELECT madlib.svec_subvec('{2,4,6}:{1,3,5}'\::madlib.svec, 2, 11);
+</pre>
+Result:
+<pre class="result">   svec_subvec
+&nbsp;----------------
+ {1,4,5}:{1,3,5}
+</pre>
+
+The elements/subvector of an svec can be changed using the function
+svec_change(). It takes three arguments: an m-dimensional svec sv1, a
+start index j, and an n-dimensional svec sv2 such that j + n - 1 <= m,
+and returns an svec like sv1 but with the subvector sv1[j:j+n-1]
+replaced by sv2. An example follows:
+<pre class="example">
+SELECT madlib.svec_change('{1,2,3}:{4,5,6}'\::madlib.svec,3,'{2}:{3}'\::madlib.svec);
+</pre>
+Result:
+<pre class="result">	 svec_change
+&nbsp;--------------------
+ {1,1,2,2}:{4,5,3,6}
+</pre>
+
+There are also higher-order functions for processing svecs. For example,
+the following is the corresponding function for lapply() in R.
+<pre class="example">
+SELECT madlib.svec_lapply('sqrt', '{1,2,3}:{4,5,6}'\::madlib.svec);
+</pre>
+Result:
+<pre class="result">
+				  svec_lapply
+&nbsp;----------------------------------------------
+ {1,2,3}:{2,2.23606797749979,2.44948974278318}
+</pre>
+
+The full list of functions available for operating on svecs are available
+in svec.sql-in.
+
+<b> A More Extensive Example</b>
+
+For a text classification example, let's assume we have a dictionary
+composed of words in a sorted text array:
+<pre class="example">
+CREATE TABLE features (a text[]);
+INSERT INTO features VALUES
+			('{am,before,being,bothered,corpus,document,i,in,is,me,
+			   never,now,one,really,second,the,third,this,until}');
+</pre>
+    We have a set of documents, each represented as an array of words:
+<pre class="example">
+CREATE TABLE documents(a int,b text[]);
+INSERT INTO documents VALUES
+			(1,'{this,is,one,document,in,the,corpus}'),
+			(2,'{i,am,the,second,document,in,the,corpus}'),
+			(3,'{being,third,never,really,bothered,me,until,now}'),
+			(4,'{the,document,before,me,is,the,third,document}');
+</pre>
+
+Now we have a dictionary and some documents, we would like to do some
+document categorization using vector arithmetic on word counts and
+proportions of dictionary words in each document.
+
+To start this process, we'll need to find the dictionary words in each
+document. We'll prepare what is called a Sparse Feature Vector or SFV
+for each document. An SFV is a vector of dimension N, where N is the
+number of dictionary words, and in each cell of an SFV is a count of
+each dictionary word in the document.
+
+Inside the sparse vector library, we have a function that will create
+an SFV from a document, so we can just do this (For a more efficient
+way for converting documents into sparse vectors, especially for larger
+datasets, please refer to <li><a href="#vectorization">Document
+Vectorization into Sparse Vectors</a></li>):
+
+<pre class="example">
+SELECT madlib.svec_sfv((SELECT a FROM features LIMIT 1),b)\::float8[]
+		 FROM documents;
+</pre>
+Result:
+<pre class="result">
+				svec_sfv
+&nbsp;----------------------------------------
+ {0,0,0,0,1,1,0,1,1,0,0,0,1,0,0,1,0,1,0}
+ {0,0,1,1,0,0,0,0,0,1,1,1,0,1,0,0,1,0,1}
+ {1,0,0,0,1,1,1,1,0,0,0,0,0,0,1,2,0,0,0}
+ {0,1,0,0,0,2,0,0,1,1,0,0,0,0,0,2,1,0,0}
+</pre>
+
+Note that the output of madlib.svec_sfv() is an svec for each
+document containing the count of each of the dictionary words in the
+ordinal positions of the dictionary. This can more easily be understood
+by lining up the feature vector and text like this:
+
+<pre class="example">
+SELECT madlib.svec_sfv((SELECT a FROM features LIMIT 1),b)\::float8[]
+				, b
+		 FROM documents;
+</pre>
+Result:
+<pre class="result">
+				svec_sfv                 |                        b
+&nbsp;----------------------------------------+--------------------------------------------------
+ {1,0,0,0,1,1,1,1,0,0,0,0,0,0,1,2,0,0,0} | {i,am,the,second,document,in,the,corpus}
+ {0,1,0,0,0,2,0,0,1,1,0,0,0,0,0,2,1,0,0} | {the,document,before,me,is,the,third,document}
+ {0,0,0,0,1,1,0,1,1,0,0,0,1,0,0,1,0,1,0} | {this,is,one,document,in,the,corpus}
+ {0,0,1,1,0,0,0,0,0,1,1,1,0,1,0,0,1,0,1} | {being,third,never,really,bothered,me,until,now}
+</pre>
+<pre class="example">
+SELECT * FROM features;
+</pre>
+<pre class="result">
+												a
+&nbsp;-------------------------------------------------------------------------------------------------------
+{am,before,being,bothered,corpus,document,i,in,is,me,never,now,one,really,second,the,third,this,until}
+</pre>
+
+Now when we look at the document "i am the second document in the corpus",
+its SFV is {1,3*0,1,1,1,1,6*0,1,2}. The word "am" is the first ordinate in
+the dictionary and there is 1 instance of it in the SFV. The word "before"
+has no instances in the document, so its value is "0" and so on.
+
+The function madlib.svec_sfv() can process large
+numbers of documents into their SFVs in parallel at high speed.
+
+The rest of the categorization process is all vector math. The actual
+count is hardly ever used.  Instead, it's turned into a weight. The most
+common weight is called tf/idf for Term Frequency / Inverse Document
+Frequency. The calculation for a given term in a given document is
+
+<pre class="example">
+{\#Times in document} * log {\#Documents / \#Documents the term appears in}.
+</pre>
+
+For instance, the term "document" in document A would have weight
+1 * log (4/3). In document D, it would have weight 2 * log (4/3).
+Terms that appear in every document would have tf/idf weight 0, since
+log (4/4) = log(1) = 0. (Our example has no term like that.) That
+usually sends a lot of values to 0.
+
+For this part of the processing, we'll need to have a sparse vector of
+the dictionary dimension (19) with the values
+<pre class="example">
+log(\#documents/\#Documents each term appears in).
+</pre>
+There will be one such vector for the whole list of documents (aka the
+"corpus"). The \#documents is just a count of all of the documents, in
+this case 4, but there is one divisor for each dictionary word and its
+value is the count of all the times that word appears in the document.
+This single vector for the whole corpus can then be scalar product
+multiplied by each document SFV to produce the Term Frequency/Inverse
+Document Frequency weights.
+
+This can be done as follows:
+<pre class="example">
+CREATE TABLE corpus AS
+			(SELECT a, madlib.svec_sfv((SELECT a FROM features LIMIT 1),b) sfv
+		 FROM documents);
+CREATE TABLE weights AS
+		  (SELECT a docnum, madlib.svec_mult(sfv, logidf) tf_idf
+		   FROM (SELECT madlib.svec_log(madlib.svec_div(count(sfv)\::madlib.svec,madlib.svec_count_nonzero(sfv))) logidf
+				FROM corpus) foo, corpus ORDER BYdocnum);
+SELECT * FROM weights;
+</pre>
+Result
+<pre class="result">
+docnum |                tf_idf
+&nbsp;------+----------------------------------------------------------------------
+	 1 | {4,1,1,1,2,3,1,2,1,1,1,1}:{0,0.69,0.28,0,0.69,0,1.38,0,0.28,0,1.38,0}
+	 2 | {1,3,1,1,1,1,6,1,1,3}:{1.38,0,0.69,0.28,1.38,0.69,0,1.38,0.57,0}
+	 3 | {2,2,5,1,2,1,1,2,1,1,1}:{0,1.38,0,0.69,1.38,0,1.38,0,0.69,0,1.38}
+	 4 | {1,1,3,1,2,2,5,1,1,2}:{0,1.38,0,0.57,0,0.69,0,0.57,0.69,0}
+</pre>
+
+We can now get the "angular distance" between one document and the rest
+of the documents using the ACOS of the dot product of the document vectors:
+The following calculates the angular distance between the first document
+and each of the other documents:
+<pre class="example">
+SELECT docnum,
+				180. * ( ACOS( madlib.svec_dmin( 1., madlib.svec_dot(tf_idf, testdoc)
+					/ (madlib.svec_l2norm(tf_idf)*madlib.svec_l2norm(testdoc))))/3.141592654) angular_distance
+		 FROM weights,(SELECT tf_idf testdoc FROM weights WHERE docnum = 1 LIMIT 1) foo
+		 ORDER BY 1;
+</pre>
+Result:
+<pre class="result">
+docnum | angular_distance
+&nbsp;-------+------------------
+	 1 |                0
+	 2 | 78.8235846096986
+	 3 | 89.9999999882484
+	 4 | 80.0232034288617
+</pre>
+
+We can see that the angular distance between document 1 and itself
+is 0 degrees and between document 1 and 3 is 90 degrees because they
+share no features at all. The angular distance can now be plugged into
+machine learning algorithms that rely on a distance measure between
+data points.
+
+SVEC also provides functionality for declaring array given an array of
+positions and array of values, intermediate values betweens those are
+declared to be base value that user provides in the same function call. In
+the example below the fist array of integers represents the positions for
+the array two (array of floats). Positions do not need to come in the
+sorted order.  Third value represents desired maximum size of the array.
+This assures that array is of that size even if last position is not. If
+max size < 1 that value is ignored and array will end at the last position
+in the position vector. Final value is a float representing the
+base value to be used between the declared ones (0 would be a common
+candidate):
+
+<pre class="example">
+SELECT madlib.svec_cast_positions_float8arr(ARRAY[1,2,7,5,87],ARRAY[.1,.2,.7,.5,.87],90,0.0);
+</pre>
+Result:
+<pre class="result">
+		svec_cast_positions_float8arr
+&nbsp;----------------------------------------------------
+{1,1,2,1,1,1,79,1,3}:{0.1,0.2,0,0.5,0,0.7,0,0.87,0}
+(1 row)
+</pre>
+
+
+@anchor related
+@par Related Topics
+
+Other examples of svecs usage can be found in the k-means module, \ref grp_kmeans.
+
+File svec.sql_in documenting the SQL functions.
+
+@internal
+@sa File sparse_vector.c documenting the implementation in C.
+@endinternal
+*/
+
+
+--! @file svec.sql_in
+--!
+
+-- DROP SCHEMA MADLIB_SCHEMA CASCADE;
+-- CREATE SCHEMA MADLIB_SCHEMA;
+
+-- DROP TYPE IF EXISTS MADLIB_SCHEMA.svec CASCADE;
+CREATE TYPE MADLIB_SCHEMA.svec;
+
+--! SVEC constructor from CSTRING.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_in(cstring)
+    RETURNS MADLIB_SCHEMA.svec
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT
+    m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Converts SVEC to CSTRING.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_out(MADLIB_SCHEMA.svec)
+    RETURNS cstring
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT
+    m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Converts SVEC internal representation to SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_recv(internal)
+    RETURNS MADLIB_SCHEMA.svec
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT
+    m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Converts SVEC to BYTEA.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_send(MADLIB_SCHEMA.svec)
+    RETURNS bytea
+    AS 'MODULE_PATHNAME'
+    LANGUAGE C IMMUTABLE STRICT
+    m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+CREATE TYPE MADLIB_SCHEMA.svec (
+       internallength = VARIABLE,
+       input = MADLIB_SCHEMA.svec_in,
+       output = MADLIB_SCHEMA.svec_out,
+       send = MADLIB_SCHEMA.svec_send,
+       receive = MADLIB_SCHEMA.svec_recv,
+       storage=EXTENDED,
+       alignment = double
+);
+
+--! Adds two SVECs together, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_plus(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_plus' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Minus second SVEC from the first, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_minus(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_minus' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Divides the first SVEC by the second, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_div(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_div' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Multiplies two SVEVs together, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_mult(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_mult' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Raises each element of the first SVEC to the power given by second SVEC, which must have dimension 1 (a scalar).
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_pow(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_pow' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Compare two SVECs, -1 for left side smaller, 1 for greater, 0 for equal
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cmp(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS integer AS 'MODULE_PATHNAME', 'svec_cmp' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the left SVEC is greater or equal to the right.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_ge(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS boolean AS 'MODULE_PATHNAME', 'svec_ge' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the left SVEC is less than the right.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_lt(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS boolean AS 'MODULE_PATHNAME', 'svec_lt' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the left SVEC is less or equal to the right.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_le(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS boolean AS 'MODULE_PATHNAME', 'svec_le' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the left SVEC is greater.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_gt(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS boolean AS 'MODULE_PATHNAME', 'svec_gt' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if two SVECs are not equal. If the two SVECs are of different size, then will return true.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_ne(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS boolean AS 'MODULE_PATHNAME', 'svec_ne' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if two SVECs are equal. If the two SVECs are of different size, then will return false.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_eq(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS boolean AS 'MODULE_PATHNAME', 'svec_eq' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if two float8 arrays are equal
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_eq(float8[],float8[]) RETURNS boolean AS 'MODULE_PATHNAME', 'float8arr_equals' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Minus second array from the first array, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_minus_float8arr(float8[],float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_minus_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Minus second SVEC from the first array, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_minus_svec(float8[],MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_minus_svec' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Minus second array from the first SVEC, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_minus_float8arr(MADLIB_SCHEMA.svec,float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_minus_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Adds two arrays together, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_plus_float8arr(float8[],float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_plus_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Adds an array and an SVEC, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_plus_svec(float8[],MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_plus_svec' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Adds an SVEC and an array, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_plus_float8arr(MADLIB_SCHEMA.svec,float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_plus_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Multiplies two float8 arrays, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_mult_float8arr(float8[],float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_mult_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Multiplies an array and an SVEC, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_mult_svec(float8[],MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_mult_svec' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Multiplies an SVEC and an array, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_mult_float8arr(MADLIB_SCHEMA.svec,float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_mult_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Divides a float8 array by another, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_div_float8arr(float8[],float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_div_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Divides a float8 array by an SVEC, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_div_svec(float8[],MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'float8arr_div_svec' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Divides an SVEC by a float8 array, element by element.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_div_float8arr(MADLIB_SCHEMA.svec,float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_div_float8arr' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Computes the dot product of two SVECs.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_dot(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS float8 AS 'MODULE_PATHNAME', 'svec_dot' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Computes the dot product of two float8 arrays.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_dot(float8[],float8[]) RETURNS float8 AS 'MODULE_PATHNAME', 'float8arr_dot' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Computes the dot product of an SVEC and a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_dot(MADLIB_SCHEMA.svec,float8[]) RETURNS float8 AS 'MODULE_PATHNAME', 'svec_dot_float8arr' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Computes the dot product of a float8 array and an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_dot(float8[],MADLIB_SCHEMA.svec) RETURNS float8 AS 'MODULE_PATHNAME', 'float8arr_dot_svec' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an int2 into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_int2(int2) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_int2' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an int4 into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_int4(int4) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_int4' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an int8 into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_int8(bigint) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_int8' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts a float4 into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_float4(float4) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_float4' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts a float8 into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_float8(float8) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_float8' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts a numeric into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_numeric(numeric) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_numeric' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an int2 into a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_cast_int2(int2) RETURNS float8[] AS 'MODULE_PATHNAME', 'float8arr_cast_int2' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an int4 into a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_cast_int4(int4) RETURNS float8[] AS 'MODULE_PATHNAME', 'float8arr_cast_int4' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an int8 into a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_cast_int8(bigint) RETURNS float8[] AS 'MODULE_PATHNAME', 'float8arr_cast_int8' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts a float4 into a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_cast_float4(float4) RETURNS float8[] AS 'MODULE_PATHNAME', 'float8arr_cast_float4' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts a float8 into a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_cast_float8(float8) RETURNS float8[] AS 'MODULE_PATHNAME', 'float8arr_cast_float8' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts a numeric into a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.float8arr_cast_numeric(numeric) RETURNS float8[] AS 'MODULE_PATHNAME', 'float8arr_cast_numeric' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts a float8 into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_float8arr(float8[]) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_float8arr' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an array of int8 positions, float8 values into an SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_cast_positions_float8arr(int8[],float8[],int8,float8) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_cast_positions_float8arr' STRICT LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Casts an SVEC into a float8 array.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_return_array(MADLIB_SCHEMA.svec) RETURNS float8[] AS 'MODULE_PATHNAME', 'svec_return_array' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Concatenates two SVECs.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_concat(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_concat' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Replicates n copies of an SVEC and concatenates them together.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_concat_replicate(int4,MADLIB_SCHEMA.svec) RETURNS MADLIB_SCHEMA.svec AS 'MODULE_PATHNAME', 'svec_concat_replicate' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+/*
+DROP OPERATOR IF EXISTS || ( MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS - ( MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS + ( MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS / ( MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS %*% ( MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS * ( MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS ^ ( MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);
+*/
+
+CREATE OPERATOR MADLIB_SCHEMA.|| (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_concat
+);
+
+CREATE OPERATOR MADLIB_SCHEMA.- (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_minus
+);
+CREATE OPERATOR MADLIB_SCHEMA.+ (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_plus
+);
+CREATE OPERATOR MADLIB_SCHEMA./ (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_div
+);
+CREATE OPERATOR MADLIB_SCHEMA.%*% (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_dot
+);
+CREATE OPERATOR MADLIB_SCHEMA.* (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_mult
+);
+CREATE OPERATOR MADLIB_SCHEMA.^ (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_pow
+);
+
+-- float8[] operators
+-- DROP OPERATOR IF EXISTS = ( float8[], float8[]);
+/*
+DROP OPERATOR IF EXISTS %*% ( float8[], MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS %*% ( MADLIB_SCHEMA.svec, float8[]);
+DROP OPERATOR IF EXISTS %*% ( float8[], float8[]);
+DROP OPERATOR IF EXISTS - ( float8[], float8[]);
+DROP OPERATOR IF EXISTS + ( float8[], float8[]);
+DROP OPERATOR IF EXISTS * ( float8[], float8[]);
+DROP OPERATOR IF EXISTS / ( float8[], float8[]);
+DROP OPERATOR IF EXISTS - ( float8[], MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS + ( float8[], MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS * ( float8[], MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS / ( float8[], MADLIB_SCHEMA.svec);
+DROP OPERATOR IF EXISTS - ( MADLIB_SCHEMA.svec, float8[]);
+DROP OPERATOR IF EXISTS + ( MADLIB_SCHEMA.svec, float8[]);
+DROP OPERATOR IF EXISTS * ( MADLIB_SCHEMA.svec, float8[]);
+DROP OPERATOR IF EXISTS / ( MADLIB_SCHEMA.svec, float8[]);
+*/
+
+/*
+CREATE OPERATOR MADLIB_SCHEMA.= (
+	leftarg = float8[],
+	rightarg = float8[],
+	procedure = MADLIB_SCHEMA.float8arr_eq,
+	commutator = operator(MADLIB_SCHEMA.=) ,
+--	negator = operator(MADLIB_SCHEMA.<>) ,
+	restrict = eqsel, join = eqjoinsel
+);
+*/
+
+CREATE OPERATOR MADLIB_SCHEMA.%*% (
+	LEFTARG = float8[],
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.svec_dot
+);
+CREATE OPERATOR MADLIB_SCHEMA.%*% (
+	LEFTARG = float8[],
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.svec_dot
+);
+CREATE OPERATOR MADLIB_SCHEMA.%*% (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.svec_dot
+);
+CREATE OPERATOR MADLIB_SCHEMA.- (
+	LEFTARG = float8[],
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.float8arr_minus_float8arr
+);
+CREATE OPERATOR MADLIB_SCHEMA.+ (
+	LEFTARG = float8[],
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.float8arr_plus_float8arr
+);
+CREATE OPERATOR MADLIB_SCHEMA.* (
+	LEFTARG = float8[],
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.float8arr_mult_float8arr
+);
+CREATE OPERATOR MADLIB_SCHEMA./ (
+	LEFTARG = float8[],
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.float8arr_div_float8arr
+);
+
+CREATE OPERATOR MADLIB_SCHEMA.- (
+	LEFTARG = float8[],
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.float8arr_minus_svec
+);
+CREATE OPERATOR MADLIB_SCHEMA.+ (
+	LEFTARG = float8[],
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.float8arr_plus_svec
+);
+CREATE OPERATOR MADLIB_SCHEMA.* (
+	LEFTARG = float8[],
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.float8arr_mult_svec
+);
+CREATE OPERATOR MADLIB_SCHEMA./ (
+	LEFTARG = float8[],
+	RIGHTARG = MADLIB_SCHEMA.svec,
+	PROCEDURE = MADLIB_SCHEMA.float8arr_div_svec
+);
+
+CREATE OPERATOR MADLIB_SCHEMA.- (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.svec_minus_float8arr
+);
+CREATE OPERATOR MADLIB_SCHEMA.+ (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.svec_plus_float8arr
+);
+CREATE OPERATOR MADLIB_SCHEMA.* (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.svec_mult_float8arr
+);
+CREATE OPERATOR MADLIB_SCHEMA./ (
+	LEFTARG = MADLIB_SCHEMA.svec,
+	RIGHTARG = float8[],
+	PROCEDURE = MADLIB_SCHEMA.svec_div_float8arr
+);
+
+/*
+DROP CAST IF EXISTS (int2 AS MADLIB_SCHEMA.svec) ;
+DROP CAST IF EXISTS (integer AS MADLIB_SCHEMA.svec) ;
+DROP CAST IF EXISTS (bigint AS MADLIB_SCHEMA.svec) ;
+DROP CAST IF EXISTS (float4 AS MADLIB_SCHEMA.svec) ;
+DROP CAST IF EXISTS (float8 AS MADLIB_SCHEMA.svec) ;
+DROP CAST IF EXISTS (numeric AS MADLIB_SCHEMA.svec) ;
+*/
+
+CREATE CAST (int2 AS MADLIB_SCHEMA.svec) WITH FUNCTION MADLIB_SCHEMA.svec_cast_int2(int2) ; -- AS IMPLICIT;
+CREATE CAST (integer AS MADLIB_SCHEMA.svec) WITH FUNCTION MADLIB_SCHEMA.svec_cast_int4(integer) ; -- AS IMPLICIT;
+CREATE CAST (bigint AS MADLIB_SCHEMA.svec) WITH FUNCTION MADLIB_SCHEMA.svec_cast_int8(bigint) ; -- AS IMPLICIT;
+CREATE CAST (float4 AS MADLIB_SCHEMA.svec) WITH FUNCTION MADLIB_SCHEMA.svec_cast_float4(float4) ; -- AS IMPLICIT;
+CREATE CAST (float8 AS MADLIB_SCHEMA.svec) WITH FUNCTION MADLIB_SCHEMA.svec_cast_float8(float8) ; -- AS IMPLICIT;
+CREATE CAST (numeric AS MADLIB_SCHEMA.svec) WITH FUNCTION MADLIB_SCHEMA.svec_cast_numeric(numeric) ; -- AS IMPLICIT;
+
+/*
+DROP CAST IF EXISTS (int2 AS float8[]) ;
+DROP CAST IF EXISTS (integer AS float8[]) ;
+DROP CAST IF EXISTS (bigint AS float8[]) ;
+DROP CAST IF EXISTS (float4 AS float8[]) ;
+DROP CAST IF EXISTS (float8 AS float8[]) ;
+DROP CAST IF EXISTS (numeric AS float8[]) ;
+*/
+
+-- CREATE CAST (int2 AS float8[]) WITH FUNCTION MADLIB_SCHEMA.float8arr_cast_int2(int2) ; -- AS IMPLICIT;
+-- CREATE CAST (integer AS float8[]) WITH FUNCTION MADLIB_SCHEMA.float8arr_cast_int4(integer) ; -- AS IMPLICIT;
+-- CREATE CAST (bigint AS float8[]) WITH FUNCTION MADLIB_SCHEMA.float8arr_cast_int8(bigint) ; -- AS IMPLICIT;
+-- CREATE CAST (float4 AS float8[]) WITH FUNCTION MADLIB_SCHEMA.float8arr_cast_float4(float4) ; -- AS IMPLICIT;
+-- CREATE CAST (float8 AS float8[]) WITH FUNCTION MADLIB_SCHEMA.float8arr_cast_float8(float8) ; -- AS IMPLICIT;
+-- CREATE CAST (numeric AS float8[]) WITH FUNCTION MADLIB_SCHEMA.float8arr_cast_numeric(numeric) ; -- AS IMPLICIT;
+
+-- DROP CAST IF EXISTS (MADLIB_SCHEMA.svec AS float8[]) ;
+-- DROP CAST IF EXISTS (float8[] AS MADLIB_SCHEMA.svec) ;
+
+CREATE CAST (MADLIB_SCHEMA.svec AS float8[]) WITH FUNCTION MADLIB_SCHEMA.svec_return_array(MADLIB_SCHEMA.svec) ; -- AS IMPLICIT;
+CREATE CAST (float8[] AS MADLIB_SCHEMA.svec) WITH FUNCTION MADLIB_SCHEMA.svec_cast_float8arr(float8[]) ; -- AS IMPLICIT;
+
+-- DROP OPERATOR IF EXISTS = (MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec) ;
+
+
+CREATE OPERATOR MADLIB_SCHEMA.= (
+	leftarg = MADLIB_SCHEMA.svec, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_eq,
+	commutator = operator(MADLIB_SCHEMA.=) ,
+--	negator = operator(MADLIB_SCHEMA.<>) ,
+	restrict = eqsel, join = eqjoinsel
+);
+
+-- Comparisons based on L2 Norm
+--! Returns true if the l2 norm of the first SVEC is less than that of the second SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_l2_lt(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS bool AS 'MODULE_PATHNAME', 'svec_l2_lt' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the l2 norm of the first SVEC is less than or equal to that of the second SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_l2_le(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS bool AS 'MODULE_PATHNAME', 'svec_l2_le' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the l2 norm of the first SVEC is equal to that of the second SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_l2_eq(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS bool AS 'MODULE_PATHNAME', 'svec_l2_eq' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the l2 norm of the first SVEC is not equal to that of the second SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_l2_ne(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS bool AS 'MODULE_PATHNAME', 'svec_l2_ne' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the l2 norm of the first SVEC is greater than that of the second SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_l2_gt(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS bool AS 'MODULE_PATHNAME', 'svec_l2_gt' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns true if the l2 norm of the first SVEC is greater than or equal to that of the second SVEC.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_l2_ge(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS bool AS 'MODULE_PATHNAME', 'svec_l2_ge' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+--! Returns a value indicating the relative values of the l2 norms of two SVECs.
+--!
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.svec_l2_cmp(MADLIB_SCHEMA.svec,MADLIB_SCHEMA.svec) RETURNS integer AS 'MODULE_PATHNAME', 'svec_l2_cmp' LANGUAGE C IMMUTABLE
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `NO SQL', `');
+
+/*
+DROP OPERATOR IF EXISTS < (MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec) CASCADE ;
+DROP OPERATOR IF EXISTS <= (MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec) CASCADE ;
+DROP OPERATOR IF EXISTS <> (MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec) ;
+DROP OPERATOR IF EXISTS == (MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec) CASCADE ;
+DROP OPERATOR IF EXISTS > (MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec) CASCADE ;
+DROP OPERATOR IF EXISTS >= (MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec) CASCADE ;
+DROP OPERATOR IF EXISTS *|| (int4, MADLIB_SCHEMA.svec) ;
+*/
+
+CREATE OPERATOR MADLIB_SCHEMA.< (
+	leftarg = MADLIB_SCHEMA.svec, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_lt,
+	commutator = operator(MADLIB_SCHEMA.>) , negator = operator(MADLIB_SCHEMA.>=) ,
+	restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR MADLIB_SCHEMA.<= (
+	leftarg = MADLIB_SCHEMA.svec, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_le,
+	commutator = operator(MADLIB_SCHEMA.>=) , negator = operator(MADLIB_SCHEMA.>) ,
+	restrict = scalarltsel, join = scalarltjoinsel
+);
+CREATE OPERATOR MADLIB_SCHEMA.<> (
+	leftarg = MADLIB_SCHEMA.svec, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_ne,
+	commutator = operator(MADLIB_SCHEMA.<>) ,
+	negator = operator(MADLIB_SCHEMA.==),
+	restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR MADLIB_SCHEMA.== (
+	leftarg = MADLIB_SCHEMA.svec, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_eq,
+	commutator = operator(MADLIB_SCHEMA.==) ,
+	negator = operator(MADLIB_SCHEMA.<>) ,
+	restrict = eqsel, join = eqjoinsel
+);
+CREATE OPERATOR MADLIB_SCHEMA.>= (
+	leftarg = MADLIB_SCHEMA.svec, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_ge,
+	commutator = operator(MADLIB_SCHEMA.<=) , negator = operator(MADLIB_SCHEMA.<) ,
+	restrict = scalargtsel, join = scalargtjoinsel
+);
+CREATE OPERATOR MADLIB_SCHEMA.> (
+	leftarg = MADLIB_SCHEMA.svec, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_gt,
+	commutator = operator(MADLIB_SCHEMA.<) , negator = operator(MADLIB_SCHEMA.<=) ,
+	restrict = scalargtsel, join = scalargtjoinsel
+);
+
+CREATE OPERATOR MADLIB_SCHEMA.*|| (
+	leftarg = int4, rightarg = MADLIB_SCHEMA.svec, procedure = MADLIB_SCHEMA.svec_concat_replicate
+);
+
+CREATE OPERATOR CLASS MADLIB_SCHEMA.svec_ops
+DEFAULT FOR TYPE MADLIB_SCHEMA.svec USING btree AS
+OPERATOR        1       MADLIB_SCHEMA.< ,
+OPERATOR        2       MADLIB_SCHEMA.<= ,
+OPERATOR        3       MADLIB_SCHEMA.== ,
+OPERATOR        4       MADLIB_SCHEMA.>= ,
+OPERATOR        5       MADLIB_SCHEMA.> ,
+FUNCTION        1       MADLIB_SCHEMA.svec_cmp(MADLIB_SCHEMA.svec, MADLIB_SCHEMA.svec);

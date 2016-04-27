@@ -1,0 +1,1429 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CMakeRunConfigurationManager" shouldGenerate="true" assignedExecutableTargets="true" buildAllGenerated="true">
+    <generated>
+      <config projectName="MADlib" targetName="sqlFiles_postgresql" />
+      <config projectName="MADlib" targetName="binaryFiles" />
+      <config projectName="MADlib" targetName="sqlFiles" />
+      <config projectName="MADlib" targetName="EP_pyxb" />
+      <config projectName="MADlib" targetName="EP_boost" />
+      <config projectName="MADlib" targetName="sqlFiles_hawq" />
+      <config projectName="MADlib" targetName="madpackFiles" />
+      <config projectName="MADlib" targetName="pythonFiles" />
+      <config projectName="MADlib" targetName="extension" />
+      <config projectName="MADlib" targetName="extension-clean" />
+      <config projectName="MADlib" targetName="madlibPatches" />
+      <config projectName="MADlib" targetName="extension-install" />
+      <config projectName="MADlib" targetName="gppkg" />
+      <config projectName="MADlib" targetName="configFiles" />
+      <config projectName="MADlib" targetName="sqlFiles_greenplum" />
+      <config projectName="MADlib" targetName="pgxn" />
+      <config projectName="MADlib" targetName="EP_eigen" />
+    </generated>
+  </component>
+  <component name="CMakeSettings" AUTO_RELOAD="false" GENERATION_PASS_SYSTEM_ENVIRONMENT="true">
+    <ADDITIONAL_GENERATION_ENVIRONMENT>
+      <envs />
+    </ADDITIONAL_GENERATION_ENVIRONMENT>
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2cfcce32-6e0e-43bd-ba6a-239c111e5136" name="Default" comment="" />
+    <ignored path="madlib-1.8.iws" />
+    <ignored path=".idea/workspace.xml" />
+    <ignored path=".idea/dataSources.local.xml" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ChangesViewManager" flattened_view="true" show_ignored="false" />
+  <component name="CreatePatchCommitExecutor">
+    <option name="PATCH_PATH" value="" />
+  </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="default_target" />
+  <component name="FavoritesManager">
+    <favorites_list name="madlib-1.8" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="svd.sql_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/linalg/svd.sql_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="975" column="32" selection-start-line="975" selection-start-column="23" selection-end-line="975" selection-end-column="42" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="decision_tree.sql_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/recursive_partitioning/decision_tree.sql_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="982" column="12" selection-start-line="982" selection-start-column="12" selection-end-line="982" selection-end-column="12" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="viterbi.sql_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/crf/viterbi.sql_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gmm.py_in" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/gmm/gmm.py_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5252855">
+              <caret line="280" column="0" selection-start-line="280" selection-start-column="0" selection-end-line="280" selection-end-column="0" />
+              <folding>
+                <element signature="e#148#159#0" expanded="true" />
+                <marker date="1461767611683" expanded="true" signature="2753:2801" placeholder="DROP TABLE I... " />
+                <marker date="1461767611683" expanded="true" signature="2995:3235" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="3050:3235" placeholder="SELECT init_... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="3464:3512" placeholder="DROP TABLE I... " />
+                <marker date="1461767611683" expanded="true" signature="3623:3670" placeholder="DROP TABLE I... " />
+                <marker date="1461767611683" expanded="true" signature="3783:3830" placeholder="DROP TABLE I... " />
+                <marker date="1461767611683" expanded="true" signature="4134:4155" placeholder="DROP TABLE I... " />
+                <marker date="1461767611683" expanded="true" signature="4347:4511" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="4403:4511" placeholder="SELECT weigh... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="5220:6132" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="5277:6053" placeholder="SELECT row_n... gmm_e_single_step" />
+                <marker date="1461767611683" expanded="true" signature="5467:6030" placeholder="SELECT missi... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="7981:8312" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="8037:8312" placeholder="SELECT missi... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="8753:9082" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="8753:9198" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="8809:9082" placeholder="SELECT missi... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="9714:9909" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="9714:9987" placeholder="CREATE TEMP missing_value" />
+                <marker date="1461767611683" expanded="true" signature="9774:9909" placeholder="SELECT updat... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="10200:10636" placeholder="SELECT missi... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="11384:11405" placeholder="DROP TABLE I... " />
+                <marker date="1461767611683" expanded="true" signature="11523:11747" placeholder="SELECT ROW( missing_value" />
+                <marker date="1461767611683" expanded="true" signature="11975:12215" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1461767611683" expanded="true" signature="12024:12215" placeholder="SELECT mean_... missing_value" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="random_forest.py_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/recursive_partitioning/random_forest.py_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="203" column="8" selection-start-line="203" selection-start-column="8" selection-end-line="203" selection-end-column="8" />
+              <folding>
+                <element signature="e#116#127#0" expanded="true" />
+                <marker date="1438131640000" expanded="true" signature="9474:9519" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="9521:9623" placeholder="CREATE TABLE... dummy_dt_con_src" />
+                <marker date="1438131640000" expanded="true" signature="9626:9960" placeholder="INSERT INTO dummy_dt_src... " />
+                <marker date="1438131640000" expanded="true" signature="9962:9998" placeholder="(9, '{1}'::I... " />
+                <marker date="1438131640000" expanded="true" signature="10000:10037" placeholder="(10, '{1}'::... " />
+                <marker date="1438131640000" expanded="true" signature="10039:10076" placeholder="(11, '{1}'::... " />
+                <marker date="1438131640000" expanded="true" signature="10079:10130" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="10132:10311" placeholder="SELECT madli... " />
+                <marker date="1438131640000" expanded="true" signature="10314:10356" placeholder="SELECT madli... " />
+                <marker date="1438131640000" expanded="true" signature="16926:16947" placeholder="select count... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="18102:18144" placeholder="SELECT count... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="18714:18751" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="18780:18816" placeholder="SELECT ''::t... " />
+                <marker date="1438131640000" expanded="true" signature="20530:20567" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="20596:20880" placeholder="SELECT missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="21204:21225" placeholder="SELECT count... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="22115:22570" placeholder="SELECT gid, *" />
+                <marker date="1438131640000" expanded="true" signature="22327:22420" placeholder="SELECT * FRO... missing_value._gen_cat_levels_set" />
+                <marker date="1438131640000" expanded="true" signature="23716:24158" placeholder="SELECT missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="24698:24947" placeholder="SELECT *, 1.... " />
+                <marker date="1438131640000" expanded="true" signature="25320:25482" placeholder="CREATE VIEW missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="25370:25477" placeholder="SELECT * FRO... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="25766:25927" placeholder="CREATE VIEW missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="25816:25927" placeholder="SELECT * FRO... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="26762:27336" placeholder="INSERT INTO missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="26828:27336" placeholder="SELECT *, mi... *" />
+                <marker date="1438131640000" expanded="true" signature="27048:27217" placeholder="SELECT *, mi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="27690:27845" placeholder="SELECT count... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="28108:28134" placeholder="SELECT count... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="33113:33157" placeholder="DROP TABLE m... " />
+                <marker date="1438131640000" expanded="true" signature="33183:33224" placeholder="DROP TABLE m... " />
+                <marker date="1438131640000" expanded="true" signature="33250:33287" placeholder="DROP TABLE m... " />
+                <marker date="1438131640000" expanded="true" signature="33313:33349" placeholder="DROP TABLE m... " />
+                <marker date="1438131640000" expanded="true" signature="33375:33419" placeholder="DROP TABLE m... " />
+                <marker date="1438131640000" expanded="true" signature="33445:33482" placeholder="DROP TABLE m... " />
+                <marker date="1438131640000" expanded="true" signature="33508:33548" placeholder="DROP TABLE m... " />
+                <marker date="1438131640000" expanded="true" signature="35006:35020" placeholder="SELECT * FRO... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="37248:37286" placeholder="SELECT count... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="37435:37459" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="37472:38138" placeholder="SELECT missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="37598:37845" placeholder="SELECT missi... " />
+                <marker date="1438131640000" expanded="true" signature="38593:38617" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="38634:39938" placeholder="SELECT missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="38770:39902" placeholder="SELECT missi... " />
+                <marker date="1438131640000" expanded="true" signature="41225:41239" placeholder="SELECT * FRO... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="41798:42123" placeholder="SELECT tree,... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="45896:47470" placeholder="CREATE VIEW missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="45943:47214" placeholder="SELECT gid, missing_value" />
+                <marker date="1438131640000" expanded="true" signature="47592:47803" placeholder="CREATE VIEW missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="47639:47803" placeholder="SELECT gid, missing_value" />
+                <marker date="1438131640000" expanded="true" signature="48042:49965" placeholder="INSERT INTO missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="48089:48237" placeholder="SELECT missi... " />
+                <marker date="1438131640000" expanded="true" signature="50520:50585" placeholder="SELECT 1 AS " />
+                <marker date="1438131640000" expanded="true" signature="50989:51023" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="51036:51334" placeholder="SELECT gid, missing_value" />
+                <marker date="1438131640000" expanded="true" signature="51193:51287" placeholder="SELECT unnes... " />
+                <marker date="1438131640000" expanded="true" signature="52314:52748" placeholder="CREATE VIEW missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="52361:52440" placeholder="SELECT sampl... " />
+                <marker date="1438131640000" expanded="true" signature="52964:53929" placeholder="INSERT INTO missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="53007:53929" placeholder="SELECT gid, missing_value" />
+                <marker date="1438131640000" expanded="true" signature="54826:54859" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="54872:55308" placeholder="SELECT gid, gid" />
+                <marker date="1438131640000" expanded="true" signature="55003:55253" placeholder="SELECT gid, missing_value" />
+                <marker date="1438131640000" expanded="true" signature="56704:56742" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="56755:58501" placeholder="SELECT 'fore... " />
+                <marker date="1438131640000" expanded="true" signature="59174:59208" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="59221:59979" placeholder="SELECT gid, missing_value" />
+                <marker date="1438131640000" expanded="true" signature="59655:59751" placeholder="SELECT unnes... " />
+                <marker date="1438131640000" expanded="true" signature="60644:60804" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="61242:61573" placeholder="INSERT INTO missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="61282:61573" placeholder="SELECT gid, unnest" />
+                <marker date="1438131640000" expanded="true" signature="61396:61476" placeholder="SELECT unnes... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="linear.py_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/regress/linear.py_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <marker date="1438131640000" expanded="true" signature="1480:1501" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="1577:1843" placeholder="SELECT missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="2410:2431" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="2515:2885" placeholder="SELECT missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="3931:3958" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="3971:4327" placeholder="SELECT missi... " />
+                <marker date="1438131640000" expanded="true" signature="4970:5123" placeholder="select sum(n... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="5453:5488" placeholder="create table... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="5505:6124" placeholder="select 'linr... " />
+                <marker date="1438131640000" expanded="true" signature="13608:13758" placeholder="CREATE TABLE... houses" />
+                <marker date="1438131640000" expanded="true" signature="14808:15010" placeholder="SELECT {sche... " />
+                <marker date="1438131640000" expanded="true" signature="15094:15396" placeholder="SELECT {sche... " />
+                <marker date="1438131640000" expanded="true" signature="15447:15475" placeholder="SELECT * FRO... houses_linregr" />
+                <marker date="1438131640000" expanded="true" signature="15485:15521" placeholder="SELECT * FRO... houses_linregr_bedroom" />
+                <marker date="1438131640000" expanded="true" signature="17704:17835" placeholder="SELECT id, m... houses" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="viterbi.py_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/crf/viterbi.py_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+              <folding>
+                <element signature="e#0#11#0" expanded="true" />
+                <marker date="1438131640000" expanded="true" signature="446:467" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="492:523" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="536:695" placeholder="SELECT doc_i... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="817:847" placeholder="SELECT COUNT... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="906:944" placeholder="create table... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="956:1392" placeholder="select segs.... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="1651:1730" placeholder="SELECT setti... pg_settings" />
+                <marker date="1438131640000" expanded="true" signature="2122:2219" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="2270:2418" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="2487:2775" placeholder="CREATE TABLE... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="2800:3003" placeholder="INSERT INTO missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="2843:2924" placeholder="SELECT start... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="4122:4152" placeholder="SELECT COUNT... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="4226:4428" placeholder="INSERT INTO missing_value... " />
+                <marker date="1438131640000" expanded="true" signature="4273:4428" placeholder="SELECT doc_i... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="4720:4832" placeholder="SELECT * FRO... " />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="gmm.sql_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/gmm/gmm.sql_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="11" column="39" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
+              <folding>
+                <marker date="1461766586798" expanded="true" signature="7251:7523" placeholder="CREATE AGGRE... gmm_update_covariance" />
+                <marker date="1461766586798" expanded="true" signature="7525:7869" placeholder="CREATE OR RE... gmm_compute_log_likelihood_transition" />
+                <marker date="1461766586798" expanded="true" signature="7872:8073" placeholder="CREATE OR RE... gmm_compute_log_likelihood_final" />
+                <marker date="1461766586798" expanded="true" signature="8012:8039" placeholder="SELECT $1::D... " />
+                <marker date="1461766586798" expanded="true" signature="8076:8307" placeholder="CREATE OR RE... gmm_compute_log_likelihood_merge" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="logistic.py_in" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/regress/logistic.py_in">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="240" column="40" selection-start-line="240" selection-start-column="31" selection-end-line="240" selection-end-column="40" />
+              <folding>
+                <marker date="1438131640000" expanded="true" signature="8898:8998" placeholder="select setti... pg_settings" />
+                <marker date="1438131640000" expanded="true" signature="9940:9969" placeholder="drop table i... " />
+                <marker date="1438131640000" expanded="true" signature="9997:10039" placeholder="create table... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="10052:10139" placeholder="select missi... " />
+                <marker date="1438131640000" expanded="true" signature="11427:11448" placeholder="drop table i... " />
+                <marker date="1438131640000" expanded="true" signature="11470:11498" placeholder="create table... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="11511:14261" placeholder="select missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="13172:13937" placeholder="select missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="13313:13530" placeholder="select missi... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="13641:13834" placeholder="select missi... " />
+                <marker date="1438131640000" expanded="true" signature="14625:14734" placeholder="select count... " />
+                <marker date="1438131640000" expanded="true" signature="14845:14895" placeholder="select count... " />
+                <marker date="1438131640000" expanded="true" signature="15010:15159" placeholder="select sum(n... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="15495:15531" placeholder="create table... missing_value" />
+                <marker date="1438131640000" expanded="true" signature="15544:16365" placeholder="select 'logr... " />
+                <marker date="1438131640000" expanded="true" signature="16846:16875" placeholder="drop table i... " />
+                <marker date="1438131640000" expanded="true" signature="16912:16941" placeholder="drop table i... " />
+                <marker date="1438131640000" expanded="true" signature="21242:21419" placeholder="CREATE TABLE... patients" />
+                <marker date="1438131640000" expanded="true" signature="22360:22397" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="22399:22444" placeholder="DROP TABLE I... " />
+                <marker date="1438131640000" expanded="true" signature="22447:22782" placeholder="SELECT madli... " />
+                <marker date="1438131640000" expanded="true" signature="22785:22815" placeholder="SELECT * fro... patients_logregr" />
+                <marker date="1438131640000" expanded="true" signature="25224:25404" placeholder="SELECT id, m... patients" />
+                <marker date="1438131640000" expanded="true" signature="27868:28016" placeholder="SELECT id, m... patients" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="random_forest.cpp" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/modules/recursive_partitioning/random_forest.cpp">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="95" column="24" selection-start-line="95" selection-start-column="12" selection-end-line="95" selection-end-column="24" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/modules/gmm/gmm.h" />
+        <option value="$PROJECT_DIR$/src/modules/gmm/gmm.cpp" />
+        <option value="$PROJECT_DIR$/src/ports/postgres/modules/gmm/gmm.sql_in" />
+        <option value="$PROJECT_DIR$/src/ports/postgres/modules/gmm/gmm.py_in" />
+      </list>
+    </option>
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" />
+  <component name="JsBuildToolPackageJson" detection-done="true" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+  </component>
+  <component name="ProjectFrameBounds">
+    <option name="x" value="53" />
+    <option name="y" value="-4" />
+    <option name="width" value="1867" />
+    <option name="height" value="1084" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="false">
+    <OptionsSetting value="true" id="Add" />
+    <OptionsSetting value="true" id="Remove" />
+    <OptionsSetting value="true" id="Checkout" />
+    <OptionsSetting value="true" id="Update" />
+    <OptionsSetting value="true" id="Status" />
+    <OptionsSetting value="true" id="Edit" />
+    <ConfirmationsSetting value="0" id="Add" />
+    <ConfirmationsSetting value="0" id="Remove" />
+  </component>
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="Scope" />
+      <pane id="ProjectPane">
+        <subPane>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ports" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ports" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="postgres" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ports" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="postgres" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ports" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="postgres" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="pca" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ports" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="postgres" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="lda" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="madlib-1.8" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ports" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="postgres" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="modules" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="gmm" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+        </subPane>
+      </pane>
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+    <property name="settings.editor.splitter.proportion" value="0.2" />
+    <property name="js-jscs-nodeInterpreter" value="/usr/bin/node" />
+  </component>
+  <component name="RunManager">
+    <configuration default="true" type="DjangoTestsConfigurationType" factoryName="Django tests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="TARGET" value="" />
+      <option name="SETTINGS_FILE" value="" />
+      <option name="CUSTOM_SETTINGS" value="false" />
+      <option name="USE_OPTIONS" value="false" />
+      <option name="OPTIONS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="JavascriptDebugType" factoryName="JavaScript Debug">
+      <method />
+    </configuration>
+    <configuration default="true" type="PyBehaveRunConfigurationType" factoryName="Behave">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PyLettuceRunConfigurationType" factoryName="Lettuce">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="ADDITIONAL_ARGS" value="" />
+      <method />
+    </configuration>
+    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.gulp" factoryName="Gulp.js">
+      <node-options />
+      <gulpfile />
+      <tasks />
+      <arguments />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="js.build_tools.npm" factoryName="npm">
+      <command value="run-script" />
+      <scripts />
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Attests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Doctests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Nosetests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="Unittests">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="PUREUNITTEST" value="true" />
+      <option name="PARAMS" value="" />
+      <option name="USE_PARAM" value="false" />
+      <method />
+    </configuration>
+    <configuration default="true" type="tests" factoryName="py.test">
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <module name="madlib-1.8" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" enabled="false" sample_coverage="true" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="" />
+      <option name="CLASS_NAME" value="" />
+      <option name="METHOD_NAME" value="" />
+      <option name="FOLDER_NAME" value="" />
+      <option name="TEST_TYPE" value="TEST_SCRIPT" />
+      <option name="PATTERN" value="" />
+      <option name="USE_PATTERN" value="false" />
+      <option name="testToRun" value="" />
+      <option name="keywords" value="" />
+      <option name="params" value="" />
+      <option name="USE_PARAM" value="false" />
+      <option name="USE_KEYWORD" value="false" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Build All" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" CONFIG_NAME="Debug" EXPLICIT_BUILD_TARGET_NAME="all">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="EP_boost" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="EP_boost" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="EP_eigen" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="EP_eigen" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="EP_pyxb" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="EP_pyxb" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="binaryFiles" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="binaryFiles" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="configFiles" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="configFiles" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="extension-clean" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="extension-clean" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="extension-install" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="extension-install" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="extension" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="extension" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="gppkg" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="gppkg" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="madlibPatches" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="madlibPatches" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="madpackFiles" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="madpackFiles" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pgxn" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="pgxn" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="pythonFiles" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="pythonFiles" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="sqlFiles" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="sqlFiles" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="sqlFiles_greenplum" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="sqlFiles_greenplum" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="sqlFiles_hawq" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="sqlFiles_hawq" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+    <configuration default="false" name="sqlFiles_postgresql" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS="FALSE" PROJECT_NAME="MADlib" TARGET_NAME="sqlFiles_postgresql" CONFIG_NAME="Debug">
+      <envs />
+      <method />
+    </configuration>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="2cfcce32-6e0e-43bd-ba6a-239c111e5136" name="Default" comment="" />
+      <created>1456813897262</created>
+      <option name="number" value="Default" />
+      <updated>1456813897262</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="53" y="-4" width="1867" height="1084" extended-state="7" />
+    <editor active="true" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23723228" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3295099" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Python Console" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="SLIDING" type="SLIDING" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="CMake" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.10774059" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <ignored-roots>
+      <path value="$PROJECT_DIR$/.." />
+      <path value="$PROJECT_DIR$/../.." />
+    </ignored-roots>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
+    <watches-manager />
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/dbal/dbal_impl.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/dbal/dbal_proto.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.7469697">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/shared/HandleTraits.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.2151515">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/crf/linear_crf.hpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="7" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/crf/viterbi.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.01843318">
+          <caret line="126" column="35" selection-start-line="126" selection-start-column="35" selection-end-line="126" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/crf/linear_crf.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.4316435">
+          <caret line="710" column="33" selection-start-line="710" selection-start-column="33" selection-end-line="710" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/convex/linear_svm_igd.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.20122887">
+          <caret line="163" column="0" selection-start-line="163" selection-start-column="0" selection-end-line="163" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/lda/lda.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.30568355">
+          <caret line="701" column="7" selection-start-line="701" selection-start-column="7" selection-end-line="701" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/regress/linear.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="40" selection-start-line="27" selection-start-column="40" selection-end-line="27" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/stats/correlation.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="63" column="16" selection-start-line="63" selection-start-column="4" selection-end-line="63" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/assoc_rules/assoc_rules.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-11.508449">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/bayes/bayes.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-23.416283">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/conjugate_gradient/conjugate_gradient.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.5176651">
+          <caret line="31" column="14" selection-start-line="31" selection-start-column="14" selection-end-line="31" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/convex/lmf.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-12.396314">
+          <caret line="23" column="6" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/convex/utils_regularization.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.0368663">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/crf/crf.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.906298">
+          <caret line="774" column="35" selection-start-line="774" selection-start-column="35" selection-end-line="774" selection-end-column="35" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/crf/crf_data_loader.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-5.2150536">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/data_profile/profile.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.0660524">
+          <caret line="24" column="46" selection-start-line="24" selection-start-column="46" selection-end-line="24" selection-end-column="46" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/elastic_net/elastic_net.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.176651">
+          <caret line="987" column="2" selection-start-line="987" selection-start-column="2" selection-end-line="987" selection-end-column="2" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/glm/glm.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-32.4255">
+          <caret line="21" column="41" selection-start-line="21" selection-start-column="41" selection-end-line="21" selection-end-column="41" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/glm/multiresponseglm.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-3.8832564">
+          <caret line="594" column="26" selection-start-line="594" selection-start-column="24" selection-end-line="594" selection-end-column="30" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/glm/ordinal.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-17.540707">
+          <caret line="23" column="5" selection-start-line="23" selection-start-column="5" selection-end-line="23" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/linalg/matrix_ops.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-50.652843">
+          <caret line="26" column="33" selection-start-line="26" selection-start-column="33" selection-end-line="26" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/linalg/pivotalr_arrayops.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-1.1413211">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/stats/clustered_variance_coxph.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="1.5222734">
+          <caret line="143" column="32" selection-start-line="143" selection-start-column="32" selection-end-line="143" selection-end-column="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/gmm/gmm.h">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="16" column="49" selection-start-line="16" selection-start-column="17" selection-end-line="16" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/stats/cox_prop_hazards.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/pca/pca.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-13.414746">
+          <caret line="25" column="49" selection-start-line="25" selection-start-column="49" selection-end-line="25" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/pca/pca_project.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-10.385561">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/pmml/table_to_pmml.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-8.24424">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/quantile/quantile.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33279744">
+          <caret line="111" column="27" selection-start-line="111" selection-start-column="25" selection-end-line="111" selection-end-column="27" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/prob/prob.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.33279744">
+          <caret line="32" column="49" selection-start-line="32" selection-start-column="48" selection-end-line="32" selection-end-column="49" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/stats/distribution.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="44" column="69" selection-start-line="44" selection-start-column="69" selection-end-line="44" selection-end-column="69" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/gmm/gmm.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="359" column="0" selection-start-line="359" selection-start-column="0" selection-end-line="359" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/linalg/svd.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.018318966">
+          <caret line="520" column="20" selection-start-line="520" selection-start-column="17" selection-end-line="520" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/modules/recursive_partitioning/random_forest.cpp">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="95" column="24" selection-start-line="95" selection-start-column="12" selection-end-line="95" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/linalg/svd.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="975" column="32" selection-start-line="975" selection-start-column="23" selection-end-line="975" selection-end-column="42" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/crf/crf.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="4.43319">
+          <caret line="245" column="7" selection-start-line="245" selection-start-column="7" selection-end-line="245" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/lda/lda.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.109913796">
+          <caret line="699" column="67" selection-start-line="699" selection-start-column="62" selection-end-line="699" selection-end-column="67" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/lda/lda.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-6.4665947">
+          <caret line="285" column="37" selection-start-line="285" selection-start-column="37" selection-end-line="285" selection-end-column="37" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/pca/pca.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-4.788793">
+          <caret line="328" column="13" selection-start-line="328" selection-start-column="4" selection-end-line="328" selection-end-column="13" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/regress/logistic.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-17.667027">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/regress/logistic.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="240" column="40" selection-start-line="240" selection-start-column="31" selection-end-line="240" selection-end-column="40" />
+          <folding>
+            <marker date="1438131640000" expanded="true" signature="8898:8998" placeholder="select setti... pg_settings" />
+            <marker date="1438131640000" expanded="true" signature="9940:9969" placeholder="drop table i... " />
+            <marker date="1438131640000" expanded="true" signature="9997:10039" placeholder="create table... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="10052:10139" placeholder="select missi... " />
+            <marker date="1438131640000" expanded="true" signature="11427:11448" placeholder="drop table i... " />
+            <marker date="1438131640000" expanded="true" signature="11470:11498" placeholder="create table... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="11511:14261" placeholder="select missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="13172:13937" placeholder="select missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="13313:13530" placeholder="select missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="13641:13834" placeholder="select missi... " />
+            <marker date="1438131640000" expanded="true" signature="14625:14734" placeholder="select count... " />
+            <marker date="1438131640000" expanded="true" signature="14845:14895" placeholder="select count... " />
+            <marker date="1438131640000" expanded="true" signature="15010:15159" placeholder="select sum(n... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="15495:15531" placeholder="create table... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="15544:16365" placeholder="select 'logr... " />
+            <marker date="1438131640000" expanded="true" signature="16846:16875" placeholder="drop table i... " />
+            <marker date="1438131640000" expanded="true" signature="16912:16941" placeholder="drop table i... " />
+            <marker date="1438131640000" expanded="true" signature="21242:21419" placeholder="CREATE TABLE... patients" />
+            <marker date="1438131640000" expanded="true" signature="22360:22397" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="22399:22444" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="22447:22782" placeholder="SELECT madli... " />
+            <marker date="1438131640000" expanded="true" signature="22785:22815" placeholder="SELECT * fro... patients_logregr" />
+            <marker date="1438131640000" expanded="true" signature="25224:25404" placeholder="SELECT id, m... patients" />
+            <marker date="1438131640000" expanded="true" signature="27868:28016" placeholder="SELECT id, m... patients" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/recursive_partitioning/random_forest.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.96103895">
+          <caret line="1339" column="33" selection-start-line="1339" selection-start-column="33" selection-end-line="1339" selection-end-column="33" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/recursive_partitioning/random_forest.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="203" column="8" selection-start-line="203" selection-start-column="8" selection-end-line="203" selection-end-column="8" />
+          <folding>
+            <element signature="e#116#127#0" expanded="true" />
+            <marker date="1438131640000" expanded="true" signature="9474:9519" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="9521:9623" placeholder="CREATE TABLE... dummy_dt_con_src" />
+            <marker date="1438131640000" expanded="true" signature="9626:9960" placeholder="INSERT INTO dummy_dt_src... " />
+            <marker date="1438131640000" expanded="true" signature="9962:9998" placeholder="(9, '{1}'::I... " />
+            <marker date="1438131640000" expanded="true" signature="10000:10037" placeholder="(10, '{1}'::... " />
+            <marker date="1438131640000" expanded="true" signature="10039:10076" placeholder="(11, '{1}'::... " />
+            <marker date="1438131640000" expanded="true" signature="10079:10130" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="10132:10311" placeholder="SELECT madli... " />
+            <marker date="1438131640000" expanded="true" signature="10314:10356" placeholder="SELECT madli... " />
+            <marker date="1438131640000" expanded="true" signature="16926:16947" placeholder="select count... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="18102:18144" placeholder="SELECT count... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="18714:18751" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="18780:18816" placeholder="SELECT ''::t... " />
+            <marker date="1438131640000" expanded="true" signature="20530:20567" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="20596:20880" placeholder="SELECT missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="21204:21225" placeholder="SELECT count... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="22115:22570" placeholder="SELECT gid, *" />
+            <marker date="1438131640000" expanded="true" signature="22327:22420" placeholder="SELECT * FRO... missing_value._gen_cat_levels_set" />
+            <marker date="1438131640000" expanded="true" signature="23716:24158" placeholder="SELECT missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="24698:24947" placeholder="SELECT *, 1.... " />
+            <marker date="1438131640000" expanded="true" signature="25320:25482" placeholder="CREATE VIEW missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="25370:25477" placeholder="SELECT * FRO... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="25766:25927" placeholder="CREATE VIEW missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="25816:25927" placeholder="SELECT * FRO... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="26762:27336" placeholder="INSERT INTO missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="26828:27336" placeholder="SELECT *, mi... *" />
+            <marker date="1438131640000" expanded="true" signature="27048:27217" placeholder="SELECT *, mi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="27690:27845" placeholder="SELECT count... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="28108:28134" placeholder="SELECT count... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="33113:33157" placeholder="DROP TABLE m... " />
+            <marker date="1438131640000" expanded="true" signature="33183:33224" placeholder="DROP TABLE m... " />
+            <marker date="1438131640000" expanded="true" signature="33250:33287" placeholder="DROP TABLE m... " />
+            <marker date="1438131640000" expanded="true" signature="33313:33349" placeholder="DROP TABLE m... " />
+            <marker date="1438131640000" expanded="true" signature="33375:33419" placeholder="DROP TABLE m... " />
+            <marker date="1438131640000" expanded="true" signature="33445:33482" placeholder="DROP TABLE m... " />
+            <marker date="1438131640000" expanded="true" signature="33508:33548" placeholder="DROP TABLE m... " />
+            <marker date="1438131640000" expanded="true" signature="35006:35020" placeholder="SELECT * FRO... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="37248:37286" placeholder="SELECT count... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="37435:37459" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="37472:38138" placeholder="SELECT missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="37598:37845" placeholder="SELECT missi... " />
+            <marker date="1438131640000" expanded="true" signature="38593:38617" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="38634:39938" placeholder="SELECT missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="38770:39902" placeholder="SELECT missi... " />
+            <marker date="1438131640000" expanded="true" signature="41225:41239" placeholder="SELECT * FRO... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="41798:42123" placeholder="SELECT tree,... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="45896:47470" placeholder="CREATE VIEW missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="45943:47214" placeholder="SELECT gid, missing_value" />
+            <marker date="1438131640000" expanded="true" signature="47592:47803" placeholder="CREATE VIEW missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="47639:47803" placeholder="SELECT gid, missing_value" />
+            <marker date="1438131640000" expanded="true" signature="48042:49965" placeholder="INSERT INTO missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="48089:48237" placeholder="SELECT missi... " />
+            <marker date="1438131640000" expanded="true" signature="50520:50585" placeholder="SELECT 1 AS " />
+            <marker date="1438131640000" expanded="true" signature="50989:51023" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="51036:51334" placeholder="SELECT gid, missing_value" />
+            <marker date="1438131640000" expanded="true" signature="51193:51287" placeholder="SELECT unnes... " />
+            <marker date="1438131640000" expanded="true" signature="52314:52748" placeholder="CREATE VIEW missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="52361:52440" placeholder="SELECT sampl... " />
+            <marker date="1438131640000" expanded="true" signature="52964:53929" placeholder="INSERT INTO missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="53007:53929" placeholder="SELECT gid, missing_value" />
+            <marker date="1438131640000" expanded="true" signature="54826:54859" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="54872:55308" placeholder="SELECT gid, gid" />
+            <marker date="1438131640000" expanded="true" signature="55003:55253" placeholder="SELECT gid, missing_value" />
+            <marker date="1438131640000" expanded="true" signature="56704:56742" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="56755:58501" placeholder="SELECT 'fore... " />
+            <marker date="1438131640000" expanded="true" signature="59174:59208" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="59221:59979" placeholder="SELECT gid, missing_value" />
+            <marker date="1438131640000" expanded="true" signature="59655:59751" placeholder="SELECT unnes... " />
+            <marker date="1438131640000" expanded="true" signature="60644:60804" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="61242:61573" placeholder="INSERT INTO missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="61282:61573" placeholder="SELECT gid, unnest" />
+            <marker date="1438131640000" expanded="true" signature="61396:61476" placeholder="SELECT unnes... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/regress/linear.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <marker date="1438131640000" expanded="true" signature="1480:1501" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="1577:1843" placeholder="SELECT missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="2410:2431" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="2515:2885" placeholder="SELECT missi... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="3931:3958" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="3971:4327" placeholder="SELECT missi... " />
+            <marker date="1438131640000" expanded="true" signature="4970:5123" placeholder="select sum(n... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="5453:5488" placeholder="create table... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="5505:6124" placeholder="select 'linr... " />
+            <marker date="1438131640000" expanded="true" signature="13608:13758" placeholder="CREATE TABLE... houses" />
+            <marker date="1438131640000" expanded="true" signature="14808:15010" placeholder="SELECT {sche... " />
+            <marker date="1438131640000" expanded="true" signature="15094:15396" placeholder="SELECT {sche... " />
+            <marker date="1438131640000" expanded="true" signature="15447:15475" placeholder="SELECT * FRO... houses_linregr" />
+            <marker date="1438131640000" expanded="true" signature="15485:15521" placeholder="SELECT * FRO... houses_linregr_bedroom" />
+            <marker date="1438131640000" expanded="true" signature="17704:17835" placeholder="SELECT id, m... houses" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/crf/viterbi.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#11#0" expanded="true" />
+            <marker date="1438131640000" expanded="true" signature="446:467" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="492:523" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="536:695" placeholder="SELECT doc_i... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="817:847" placeholder="SELECT COUNT... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="906:944" placeholder="create table... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="956:1392" placeholder="select segs.... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="1651:1730" placeholder="SELECT setti... pg_settings" />
+            <marker date="1438131640000" expanded="true" signature="2122:2219" placeholder="DROP TABLE I... " />
+            <marker date="1438131640000" expanded="true" signature="2270:2418" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="2487:2775" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="2800:3003" placeholder="INSERT INTO missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="2843:2924" placeholder="SELECT start... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="4122:4152" placeholder="SELECT COUNT... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="4226:4428" placeholder="INSERT INTO missing_value... " />
+            <marker date="1438131640000" expanded="true" signature="4273:4428" placeholder="SELECT doc_i... missing_value" />
+            <marker date="1438131640000" expanded="true" signature="4720:4832" placeholder="SELECT * FRO... " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/gmm/gmm.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="11" column="39" selection-start-line="11" selection-start-column="39" selection-end-line="11" selection-end-column="39" />
+          <folding>
+            <marker date="1461766586798" expanded="true" signature="7251:7523" placeholder="CREATE AGGRE... gmm_update_covariance" />
+            <marker date="1461766586798" expanded="true" signature="7525:7869" placeholder="CREATE OR RE... gmm_compute_log_likelihood_transition" />
+            <marker date="1461766586798" expanded="true" signature="7872:8073" placeholder="CREATE OR RE... gmm_compute_log_likelihood_final" />
+            <marker date="1461766586798" expanded="true" signature="8012:8039" placeholder="SELECT $1::D... " />
+            <marker date="1461766586798" expanded="true" signature="8076:8307" placeholder="CREATE OR RE... gmm_compute_log_likelihood_merge" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/crf/viterbi.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="27" column="27" selection-start-line="27" selection-start-column="27" selection-end-line="27" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/recursive_partitioning/decision_tree.sql_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="982" column="12" selection-start-line="982" selection-start-column="12" selection-end-line="982" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ports/postgres/modules/gmm/gmm.py_in">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.5252855">
+          <caret line="280" column="0" selection-start-line="280" selection-start-column="0" selection-end-line="280" selection-end-column="0" />
+          <folding>
+            <element signature="e#148#159#0" expanded="true" />
+            <marker date="1461767611683" expanded="true" signature="2753:2801" placeholder="DROP TABLE I... " />
+            <marker date="1461767611683" expanded="true" signature="2995:3235" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="3050:3235" placeholder="SELECT init_... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="3464:3512" placeholder="DROP TABLE I... " />
+            <marker date="1461767611683" expanded="true" signature="3623:3670" placeholder="DROP TABLE I... " />
+            <marker date="1461767611683" expanded="true" signature="3783:3830" placeholder="DROP TABLE I... " />
+            <marker date="1461767611683" expanded="true" signature="4134:4155" placeholder="DROP TABLE I... " />
+            <marker date="1461767611683" expanded="true" signature="4347:4511" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="4403:4511" placeholder="SELECT weigh... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="5220:6132" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="5277:6053" placeholder="SELECT row_n... gmm_e_single_step" />
+            <marker date="1461767611683" expanded="true" signature="5467:6030" placeholder="SELECT missi... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="7981:8312" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="8037:8312" placeholder="SELECT missi... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="8753:9082" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="8753:9198" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="8809:9082" placeholder="SELECT missi... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="9714:9909" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="9714:9987" placeholder="CREATE TEMP missing_value" />
+            <marker date="1461767611683" expanded="true" signature="9774:9909" placeholder="SELECT updat... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="10200:10636" placeholder="SELECT missi... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="11384:11405" placeholder="DROP TABLE I... " />
+            <marker date="1461767611683" expanded="true" signature="11523:11747" placeholder="SELECT ROW( missing_value" />
+            <marker date="1461767611683" expanded="true" signature="11975:12215" placeholder="CREATE TABLE... missing_value" />
+            <marker date="1461767611683" expanded="true" signature="12024:12215" placeholder="SELECT mean_... missing_value" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+  </component>
+</project>

@@ -1,0 +1,309 @@
+# coding=utf-8
+
+"""
+@file gmm.py_in
+
+@brief Gaussian Mixture Model: Driver functions
+
+@namespace gmm
+
+Gaussian Mixture Model: Driver functions
+"""
+
+import plpy
+from utilities.validate_args import table_exists
+from utilities.validate_args import table_is_empty
+from utilities.validate_args import columns_exist_in_table
+from utilities.utilities import _assert
+
+
+def _validate_columns(columns, table_name, err_msg_tbl):
+    """
+    @brief Validate if columns exist in the table
+    """
+    if len(columns) == 1:
+        _assert(columns_exist_in_table(table_name, columns),
+                "GMM error: The following column is missing from {} table: {}".format(err_msg_tbl, columns))
+    else:
+        _assert(columns_exist_in_table(table_name, columns),
+                "GMM error: The following columns are missing from {} table: {}".format(err_msg_tbl,
+                                                                                        ' ,'.join(columns)))
+
+def _valigate_args(data_table, data_col_name, initial_model_table):
+    # Check if input table exists.
+    _assert(table_exists(data_table),
+            "GMM error: Input table containing data doesn't exist!")
+
+    _assert(table_exists(initial_model_table),
+            """GMM error: Input table containing initial model doesn't exist! \n
+            Initial model table should contain the weight_vector, mean_matrix, and
+            covariance_matrix""")
+
+    # check if required columns exist
+    _validate_columns([data_col_name], data_table, data_table)
+    _validate_columns(['weight_vector', 'mean_matrix', 'covariance_matrix'], initial_model_table, initial_model_table)
+
+
+def gmm_train(schema_madlib, data_table, data_col_name,
+              initial_model_table, learnt_model_table,
+              k, max_num_iterations, tolerance):
+
+    if max_num_iterations < 1:
+        plpy.error("GMM error: Number of iterations must be positive")
+
+    if tolerance <= 0:
+        plpy.error("GMM error: The tolerance must be positive!")
+
+    if k <= 0:
+        plpy.error("GMM error: The value of k must be greater than 0.")
+
+    # validate the data tables and columns
+    _valigate_args(data_table, data_col_name, initial_model_table)
+
+    # Check for invalid final learnt model table name
+    if learnt_model_table is None or learnt_model_table in ('null', ''):
+        plpy.error("GMM error: Invalid final result table!")
+
+    """
+        Execute the SQL query to update the cluster membership
+        for each data point.
+    """
+
+    e_temp_table_name = "gmm_e_temp_table"
+    m_temp_table_name = "gmm_m_temp_table"
+    temp_means_table = "gmm_means_temp"
+    temp_covar_table = "gmm_covar_temp"
+
+    # Query to delete the M step temp table
+    delete_m_temp_table = plpy.prepare("""
+        DROP TABLE IF EXISTS {m_temp_table_name} CASCADE
+    """.format(m_temp_table_name = m_temp_table_name))
+
+    # Query string to create the temp table required in the M (Maximization) step.
+    create_m_temp_table = plpy.prepare("""
+           CREATE TEMP TABLE {m_temp_table_name} AS
+              SELECT
+                init_table.weight_vector,
+                init_table.mean_matrix,
+                init_table.covariance_matrix
+              FROM {init_model_table} AS init_table
+        """.format(m_temp_table_name = m_temp_table_name,
+                   init_model_table = initial_model_table))
+
+    # Query to delete the E (Expectation) step temp table
+    delete_e_temp_table = plpy.prepare("""
+        DROP TABLE IF EXISTS {e_temp_table_name} CASCADE
+    """.format(e_temp_table_name = e_temp_table_name))
+
+    delete_means_table = plpy.prepare("""
+            DROP TABLE IF EXISTS {temp_means_table} CASCADE
+        """.format(temp_means_table = temp_means_table))
+
+    delete_covar_table = plpy.prepare("""
+            DROP TABLE IF EXISTS {temp_covar_table} CASCADE
+        """.format(temp_covar_table = temp_covar_table))
+
+    # @todo - next version
+    # if initial_model_table is null then do k-means first and
+    # compute gaussian parameters from it.
+
+    gaussian_model_table = "internal_gmm_model_table"
+
+    del_gaussian_model_table = plpy.prepare("""
+        DROP TABLE IF EXISTS {gaussian_model_table}"""
+        .format(gaussian_model_table = gaussian_model_table))
+
+    plpy.execute(del_gaussian_model_table)
+
+    create_gaussian_model_table = plpy.prepare("""
+        CREATE TEMP TABLE {gaussian_model_table} AS
+            SELECT weight_vector,
+                   mean_matrix,
+                   covariance_matrix
+            FROM {initial_model_table}
+            """.format(gaussian_model_table = gaussian_model_table,
+                       initial_model_table = initial_model_table))
+
+    plpy.execute(create_gaussian_model_table)
+
+    log_likelihood_previous = 0.0
+    log_likelihood_current = 0.0
+    iteration_no = 0
+
+    while True:
+
+        # Begin the E step.
+        plpy.execute(delete_e_temp_table)
+
+        # Create a temp table for the E step with the following columns :
+        # row_id | data_point | cluster_membership
+        # The cluster_membership column contains the cluster membership probabilities for each data point.
+        # Partition the table on row_id for MPP database.
+        plpy.execute("""
+            CREATE TEMP TABLE {e_temp_table_name} AS
+                SELECT
+                    row_number() over (order by null) as row_id,
+                    Z.data_point,
+                    Z.cluster_membership
+                FROM (
+                    SELECT
+                        {schema_madlib}.gmm_e_single_step
+                        (
+                            inp_table.{data_col_name},
+                            init_table.weight_vector,
+                            init_table.mean_matrix,
+                            init_table.covariance_matrix
+                        ) AS cluster_membership,
+                        inp_data_table.{data_col_name} AS data_point
+                    FROM
+                      {inp_data_table} AS inp_table,
+                      {gaussian_model_table} AS init_table
+                ) AS Z
+            m4_ifdef(`__POSTGRESQL__', `', `DISTRIBUTED BY (row_id)')
+        """.format(e_temp_table_name = e_temp_table_name,
+                   schema_madlib = schema_madlib,
+                   data_col_name = data_col_name,
+                   inp_data_table = data_table,
+                   gaussian_model_table = gaussian_model_table
+                   ))
+
+        # Begin the M step.
+        # plpy.execute(delete_m_temp_table)
+        # plpy.execute("""
+        #     CREATE TEMP TABLE {m_temp_table_name} AS
+        #         SELECT
+        #             updated_weight_mean_result.weight_vector,
+        #             updated_weight_mean_result.mean_matrix,
+        #             {schema_madlib}.gmm_update_covariance
+        #             (
+        #                 subq.data_point,
+        #                 subq.cluster_membership,
+        #                 {no_of_clusters},
+        #                 updated_weight_mean_result.mean_matrix
+        #             ) AS covariance_matrix
+        #         FROM
+        #         (
+        #             SELECT
+        #                 {e_temp_table_name}.data_point,
+        #                 {e_temp_table_name}.cluster_membership,
+        #                 {schema_madlib}.gmm_update_weight
+        #                 (
+        #                     {e_temp_table_name}.data_point,
+        #                     {e_temp_table_name}.cluster_membership
+        #                 ) AS updated_weight_mean_result
+        #             FROM {e_temp_table_name}
+        #         ) AS subq
+        # """.format(schema_madlib=schema_madlib,
+        #            m_temp_table_name=m_temp_table_name,
+        #            e_temp_table_name=e_temp_table_name,
+        #            no_of_clusters=k))
+
+        # Update weight vector and mean matrix using E step result.
+        plpy.execute(delete_means_table)
+        update_mean_weight_query = plpy.prepare("""
+            CREATE TEMP TABLE {temp_means_table} AS
+                SELECT
+                    {schema_madlib}.gmm_update_weight
+                    (
+                        {e_temp_table_name}.data_point,
+                        {e_temp_table_name}.cluster_membership
+                    ) AS updated_weight_mean_result
+                FROM {e_temp_table_name}
+        """.format(schema_madlib = schema_madlib,
+                   e_temp_table_name = e_temp_table_name,
+                   temp_means_table = temp_means_table))
+
+        plpy.execute(update_mean_weight_query)
+
+        # Update covariance matrix using mean calculated in previous
+        # step and E step result.
+        plpy.execute(delete_covar_table)
+        update_covariance_query = plpy.prepare("""
+            CREATE TEMP TABLE {temp_covar_table} AS
+                SELECT
+                    {schema_madlib}.gmm_update_covariance
+                    (
+                        {e_temp_table_name}.data_point,
+                        {e_temp_table_name}.cluster_membership,
+                        {no_of_clusters},
+                        {temp_means_table}.mean_matrix
+                    ) AS covariance_matrix
+                FROM {e_temp_table_name}, {temp_means_table}
+        """.format(schema_madlib = schema_madlib,
+                   e_temp_table_name = e_temp_table_name,
+                   temp_means_table = temp_means_table,
+                   temp_covar_table = temp_covar_table,
+                   no_of_clusters = k))
+
+        plpy.execute(update_covariance_query)
+
+        # Store the gaussian parameters in gaussian_model_table
+        # for next interation of E step.
+        plpy.execute(del_gaussian_model_table)
+        plpy.execute("""
+            CREATE TEMP TABLE {gaussian_model_table} AS
+                SELECT updated_weight_mean_result.weight_vector,
+                       updated_weight_mean_result.mean_matrix,
+                       {temp_covar_table}.covariance_matrix
+                FROM {temp_means_table}, {temp_covar_table}
+                     """.format(temp_means_table = temp_means_table,
+                                temp_covar_table = temp_covar_table))
+
+        log_likelihood = plpy.execute("""
+            SELECT
+                {schema_madlib}.gmm_compute_log_likelihood
+                (
+                    {e_temp_table_name}.data_point,
+                    {e_temp_table_name}.cluster_membership,
+                    {m_temp_table_name}.weight_vector,
+                    {m_temp_table_name}.mean_matrix,
+                    {m_temp_table_name}.covariance_matrix
+                ) AS log_likelihood
+            FROM {e_temp_table_name}, {m_temp_table_name}
+        """.format(schema_madlib = schema_madlib,
+                   e_temp_table_name = e_temp_table_name,
+                   m_temp_table_name = m_temp_table_name))
+
+        log_likelihood_previous = log_likelihood_current
+        log_likelihood_current = log_likelihood[0]['log_likelihood']
+        iteration_no += 1
+        gaussian_model_table = m_temp_table_name
+
+        if (
+                iteration_no >= max_num_iterations or
+                abs(log_likelihood_current - log_likelihood_previous) < tolerance
+           ):
+            break
+
+    # Prepare the final output table with the computed.
+    # Drop the table first, if it exists.
+    # @todo - Warn the user that final output is not empty
+
+    plpy.execute("DROP TABLE IF EXISTS {learnt_model_table}".format(learnt_model_table=learnt_model_table))
+
+    gmm_final_result = plpy.execute("""
+        SELECT
+            ROW(
+                mean_matrix,
+                covariance_matrix,
+                {log_likelihood},
+                {num_iterations}
+            )::{schema_madlib}.gmm_result AS gmm_result
+        FROM {gaussian_model_table}
+        """.format(log_likelihood = log_likelihood_current,
+                   num_iterations = iteration_no,
+                   gaussian_model_table = gaussian_model_table))
+
+    plpy.execute("""
+        CREATE TABLE {learnt_model_table} AS
+            SELECT
+                mean_matrix,
+                covariance_matrix,
+                {log_likelihood} AS log_likelihood,
+                {num_iterations} AS num_iterations
+            FROM {gaussian_model_table}
+        """.format(log_likelihood = log_likelihood,
+                   num_iterations = iteration_no,
+                   gaussian_model_table = gaussian_model_table))
+
+    return gmm_final_result[0]['gmm_result']

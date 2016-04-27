@@ -1,0 +1,239 @@
+/*
+ * @file gmm.sql_in
+ * @brief Contains the user defined function and
+ * user defined aggregated needed for computing
+ * the Expectation and Maximization steps of GMM.
+ */
+
+m4_include(`SQLCommon.m4')
+
+-- User defined type for final result.
+DROP TYPE IF EXISTS MADLIB_SCHEMA.gmm_result CASCADE;
+CREATE TYPE MADLIB_SCHEMA.gmm_result AS
+(
+    weight_vector     DOUBLE PRECISION [],
+    mean_matrix       DOUBLE PRECISION [][],
+    covariance_matrix DOUBLE PRECISION [][],
+    log_likelihood    DOUBLE PRECISION,
+    num_iterations    INTEGER
+);
+
+/**
+ * @brief UDF to start the GMM process
+ * @param inp_data_table Name of the table containig input data
+ * @param inp_data_col_name Name of the column in inp_data_table containing data.
+ *        A data points are assumed to be a numeric array.
+ * @param initial_model_table Table name containing the initial model to be used
+ *        in the E step. The table must contain three columns: weight_vector, mean_matrix, covariance_matrix
+ * @param output_model_table The name of the table which will conatin the learned gaussian parameters.
+ * @param k Number of clusters desired.
+ * @param tolerence minimum change in log_likelihood below which we stop the iterations.
+ */
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_train
+(
+    inp_data_table        TEXT,
+    inp_data_col_name     TEXT,
+    initial_model_table   TEXT,
+    output_model_table    TEXT,
+    k                     INTEGER,
+    max_num_iterations    INTEGER,            /* DEFAULT 20 */
+    tolerence             DOUBLE PRECISION    /* DEFAULT 0.01 */
+)
+RETURNS MABLIB_SCHEMA.gmm_result AS $$
+PythonFunction(gmm, gmm, gmm_train)
+$$ LANGUAGE plpythonu
+m4_ifdef(`__HAS_FUNCTION_PROPERTIES__', `MODIFIES SQL DATA', `');
+
+/**
+ * @brief This UDF is used to the cluster membership probabilities
+ * for a data point. If there are k clusters the this UDF find the
+ * probabilities of a data point belonging to each of the k clusters.
+ * @param data_point A data row from inp_data_table.
+ * @param weight_vec Array containing weight probabilities for gaussians.
+ * @param mean_mat 2-D array in which each row contains mean vector of a gaussian.
+ * @param covariance_mat 2-D array containing the covariance matrix of gaussian.
+ *        It's assumed to be same for all gaussians.
+ * @return array of cluster membership probabilities of a data point.
+ */
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_e_single_step
+(
+	  data_point 	    DOUBLE PRECISION[],
+    weight_vec      DOUBLE PRECISION[],
+    mean_mat		    DOUBLE PRECISION[][],
+    covariance_mat  DOUBLE PRECISION[][]
+)
+RETURNS DOUBLE PRECISION[]
+	AS 'MODULE_PATHNAME', 'gmm_e_single_step'
+	LANGUAGE C IMMUTABLE;
+
+DROP AGGREGATE IF EXISTS MADLIB_SCHEMA.gmm_update_weight
+(
+  DOUBLE PRECISION[],     /* input data */
+  DOUBLE PRECISION[]      /* cluster membership data */
+);
+
+DROP TYPE IF EXISTS MADLIB_SCHEMA.gmm_e_step_result CASCADE;
+CREATE TYPE MADLIB_SCHEMA.gmm_e_step_result AS
+(
+    weight_vector DOUBLE PRECISION[],
+    mean_matrix   DOUBLE PRECISION [][]
+);
+
+/**
+ * @brief This UDA the Expectation step of EM algorithm.
+ * @param column containing data.
+ * @param column containing cluster_membership.
+ * @returns gmm_e_step_result, which is a user defined type containing
+ *          the mean_matrix and weight_vector.
+ */
+CREATE AGGREGATE MADLIB_SCHEMA.gmm_update_weight
+(
+    DOUBLE PRECISION[],   /* input data */
+    DOUBLE PRECISION[]    /* cluster membership data */
+)
+(
+    STYPE = DOUBLE PRECISION[],
+    SFUNC = MADLIB_SCHEMA.gmm_update_weight_transition,
+    FINALFUNC = MADLIB_SCHEMA.gmm_update_weight_final,
+    m4_ifdef(`__POSTGRESQL__', `', `prefunc = MADLIB_SCHEMA.gmm_update_weight_merge,')
+    INITCOND = '{0,0,0}'
+);
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_update_weight_transition
+(
+    DOUBLE PRECISION[],         /* state */
+    DOUBLE PRECISION[],         /* input data */
+    DOUBLE PRECISION[]          /* cluster membership data */
+) RETURNS DOUBLE PRECISION[]
+    AS 'MODULE_PATHNAME', 'gmm_update_weight_transition'
+    LANGUAGE C IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_update_weight_merge(
+    DOUBLE PRECISION[],         /* state 1 */
+    DOUBLE PRECISION[]          /* state 2 */
+) RETURNS DOUBLE PRECISION[]
+    AS 'MODULE_PATHNAME', 'gmm_update_weight_merge'
+    LANGUAGE C IMMUTABLE;
+
+/**
+ * @brief This function converts the state type (DOUBLE PRECISION[]) used
+ * in UDA gmm_update_weight in the desired format, and some calculations.
+ */
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_update_weight_final
+(
+    DOUBLE PRECISION[]
+) RETURNS MADLIB_SCHEMA.gmm_e_step_result
+    AS 'MODULE_PATHNAME', 'gmm_update_weight_final'
+    LANGUAGE C IMMUTABLE;
+
+DROP AGGREGATE IF EXISTS MADLIB_SCHEMA.gmm_update_covariance
+(
+  DOUBLE PRECISION[],       /* input data */
+  DOUBLE PRECISION[],       /* cluster membership data */
+  INTEGER,                  /* Number of clusters */
+  DOUBLE PRECISION[],       /* weight vector */
+  DOUBLE PRECISION[][]      /* mean matrix */
+);
+
+/**
+ * @brief This UDA computes the covariance matrix using the mean for each each gaussian
+ * input data, and cluster membership calculated in E step.
+ * @returns A 2-D array containing covariance.
+ */
+CREATE AGGREGATE MADLIB_SCHEMA.gmm_update_covariance
+(
+    DOUBLE PRECISION[],       /* input data */
+    DOUBLE PRECISION[],       /* cluster membership data */
+    INTEGER,                  /* Number of clusters */
+    DOUBLE PRECISION[],       /* weight vector */
+    DOUBLE PRECISION[][]      /* mean matrix */
+)
+(
+    STYPE = DOUBLE PRECISION[],
+    SFUNC = MADLIB_SCHEMA.gmm_update_covariance_transition,
+    FINALFUNC = MADLIB_SCHEMA.gmm_update_covariance_final,
+    m4_ifdef(`__POSTGRESQL__', `', `prefunc = MADLIB_SCHEMA.gmm_update_covariance_merge,')
+    INITCOND = '{0,0,0,0}'
+);
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_update_covariance_transition
+(
+    DOUBLE PRECISION[],         /* state */
+    DOUBLE PRECISION[],         /* input data */
+    DOUBLE PRECISION[],         /* cluster membership data */
+    INTEGER,                    /* Number of clusters */
+    DOUBLE PRECISION[],         /* weight vector */
+    DOUBLE PRECISION[][]        /* mean matrix */
+) RETURNS DOUBLE PRECISION[]
+    AS 'MODULE_PATHNAME', 'gmm_update_covariance_transition'
+    LANGUAGE C IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_update_covariance_final
+(
+    DOUBLE PRECISION[]
+) RETURNS DOUBLE PRECISION[][]
+    AS 'MODULE_PATHNAME', 'gmm_update_covariance_final'
+    LANGUAGE C IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_update_covariance_merge
+(
+    DOUBLE PRECISION[],
+    DOUBLE PRECISION[]
+) RETURNS DOUBLE PRECISION[]
+    AS 'MODULE_PATHNAME', 'gmm_update_covariance_merge'
+    LANGUAGE C IMMUTABLE;
+
+DROP AGGREGATE MADLIB_SCHEMA.gmm_compute_log_likelihood
+(
+    DOUBLE PRECISION[],
+    DOUBLE PRECISION[],
+    DOUBLE PRECISION[],
+    DOUBLE PRECISION[][],
+    DOUBLE PRECISION[][]
+)
+
+CREATE AGGREGATE MADLIB_SCHEMA.gmm_compute_log_likelihood
+(
+    DOUBLE PRECISION[],      /* data point (row) */
+    DOUBLE PRECISION[],      /* cluster membership for that data pont */
+    DOUBLE PRECISION[],      /* weight vector */
+    DOUBLE PRECISION[][],    /* mean matrix */
+    DOUBLE PRECISION[][]     /* covariance matrix */
+)
+(
+  STYPE = DOUBLE PRECISION,
+  SFUNC = MADLIB_SCHEMA.gmm_compute_log_likelihood_transition,
+  FINALFUNC = MADLIB_SCHEMA.gmm_compute_log_likelihood_final,
+  m4_ifdef(`__POSTGRESQL__', `', `prefunc = MADLIB_SCHEMA.gmm_compute_log_likelihood_merge,')
+  INITCOND = '{0}'
+)
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_compute_log_likelihood_transition
+(
+    DOUBLE PRECISION,
+    DOUBLE PRECISION[],
+    DOUBLE PRECISION[],
+    DOUBLE PRECISION[],
+    DOUBLE PRECISION[][],
+    DOUBLE PRECISION[][]
+
+) RETURNS DOUBLE PRECISION
+    AS 'MODULE_PATHNAME', 'gmm_compute_log_likelihood_transition'
+    LANGUAGE C IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_compute_log_likelihood_final
+(
+    DOUBLE PRECISION
+) RETURNS DOUBLE PRECISION AS
+    $$
+      SELECT $1::DOUBLE PRECISION
+    $$
+    LANGUAGE SQL IMMUTABLE;
+
+CREATE OR REPLACE FUNCTION MADLIB_SCHEMA.gmm_compute_log_likelihood_merge
+(
+    DOUBLE PRECISION,
+    DOUBLE PRECISION
+) RETURNS DOUBLE PRECISION
+    AS 'MODULE_PATHNAME', 'gmm_compute_log_likelihood_merge'
+    LANGUAGE C IMMUTABLE;

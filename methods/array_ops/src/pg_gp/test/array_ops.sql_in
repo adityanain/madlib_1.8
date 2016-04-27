@@ -1,0 +1,91 @@
+---------------------------------------------------------------------------
+-- Rules:
+-- ------
+-- 1) Any DB objects should be created w/o schema prefix,
+--    since this file is executed in a separate schema context.
+-- 2) There should be no DROP statements in this script, since
+--    all objects created in the default schema will be cleaned-up outside.
+---------------------------------------------------------------------------
+
+---------------------------------------------------------------------------
+-- Setup:
+---------------------------------------------------------------------------
+CREATE TABLE data AS
+SELECT
+    '{1,2,3}'::float8[] AS an,
+    '{4,5,7}'::float8[] AS b;
+
+SELECT array_dot(
+    array_mult(
+        array_add(an,b),
+        array_sub(an,b)),
+    array_mult(
+        array_div(an,b),
+        normalize(an))) AS result1
+FROM data;
+
+SELECT array_max(b) FROM data;
+SELECT array_min(b) FROM data;
+SELECT array_sum(b) FROM data;
+SELECT array_sum_big(b) FROM data;
+SELECT array_mean(b) FROM data;
+SELECT array_stddev(b) FROM data;
+
+SELECT array_max(b)
+    + array_min(b)
+    + array_sum(b)
+    + array_sum_big(b)
+    + array_mean(b)
+    + array_stddev(b) AS result2
+FROM data;
+
+SELECT array_sum(
+    array_scalar_mult(
+        array_fill(
+            array_of_float(20),
+            234.343::FLOAT8),
+        3.7::FLOAT8))
+FROM data;
+
+-- array_agg
+CREATE TABLE test AS SELECT generate_series(1,100) x;
+SELECT array_agg(x) FROM test;
+
+-- array_scalar_add
+SELECT assert(
+    relative_error(
+        array_scalar_add(ARRAY[0.8, 9.5, 2.6]::float8[], 2.2::float8),
+        ARRAY[3.0, 11.7, 4.8]::float8[]) < 1e-6,
+    'array_scalar_add: Wrong results');
+
+-- array_square
+SELECT assert(
+    relative_error(
+        array_square(ARRAY[3, 4, 5]::float8[]),
+        ARRAY[9.0, 16.0, 25.0]::float8[]) < 1e-6,
+    'array_square: Wrong results');
+
+SELECT array_filter(ARRAY[0.8, 9.5, 0, 2.6]::float8[]);
+SELECT array_filter(ARRAY[0.8, 9.5, 0, 2.6]::float8[], 2.5::float8, '<');
+
+------------------------------------------------------------
+-- numeric[]
+------------------------------------------------------------
+-- (array) -> scalar
+SELECT array_sum_big(ARRAY[-1, 1.3, 2.9]);
+SELECT array_sum(ARRAY[-1, 1.3, 2.9]);
+SELECT array_max(ARRAY[-1, 1.3, 2.9]);
+SELECT array_min(ARRAY[-1, 1.3, 2.9]);
+SELECT array_stddev(ARRAY[-1, 1.3, 2.9]);
+SELECT array_mean(ARRAY[-1, 1.3, 2.9]);
+
+-- (array, array) -> scalar
+SELECT array_dot(ARRAY[-1, 1.3, 2.9], ARRAY[1,2,3]::numeric[]);
+SELECT array_contains(ARRAY[1., 2.], ARRAY[1., 0]);
+
+-- (array,) -> array
+SELECT array_scalar_mult(
+    ARRAY[1,2,3,4]::numeric[],
+    (1.0/MADLIB_SCHEMA.array_sum(ARRAY[1.,2,3,4]))
+);
+
